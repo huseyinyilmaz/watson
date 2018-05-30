@@ -1,0 +1,12 @@
+django
+django-webpack-loader
+django-storages
+django-model-utils
+django-extensions
+django-filter
+django-cors-headers
+
+djangorestframework
+drf-extensions
+google-cloud-storage
+django-health-check
