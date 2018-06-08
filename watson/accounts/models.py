@@ -25,7 +25,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     # OPTIONAL FIELDS #
     ###################
     # generic optional fields
-
     full_name = models.CharField(_('full name'), max_length=30, blank=True)
     is_staff = models.BooleanField(_('staff status'), default=False,
                                    help_text=_('Designates whether the '
@@ -66,3 +65,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     def send_email(self, subject, message, from_email=None, **kwargs):
         """Send an email to this User."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+
+class Company(models.Model):
+
+    """Company Model."""
+
+    name = models.CharField(max_length=255)
+    slug = models.SlugField()
+    users = models.ManyToManyField(User)
