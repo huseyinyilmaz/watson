@@ -9,3 +9,16 @@
 
 
 Perceltual diff utility.
+
+
+Possible names
+--------------
+- Release checker project
+
+Sources
+-------
+- https://github.com/fate0/pychrome/blob/master/pychrome/tab.py
+- https://medium.com/@dschnr/using-headless-chrome-as-an-automated-screenshot-tool-4b07dffba79a
+- https://gist.github.com/rverton/d07a2232f4c0e1c2b9894e9bdb4fa6cf
+- https://www.npmjs.com/package/capture-chrome
+- https://www.npmjs.com/package/capture-phantomjs
