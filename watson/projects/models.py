@@ -1,16 +1,20 @@
 from django.db import models
-from accounts.models import Company
+from accounts.models import Organization
 from core import constants
+from django_extensions.db.models import TimeStampedModel
 
 
 class Project(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField()
-    company = models.ForeignKey(Company)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.name}'
 
 
-class Screenshot(models.Model):
-    project = models.ForeignKey(Project)
+class Screenshot(TimeStampedModel):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     size = models.CharField(max_length=255,
                             choices=constants.SIZE_CHOICES)
     browser = models.CharField(max_length=255,

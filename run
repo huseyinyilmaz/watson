@@ -1,0 +1,52 @@
+#!/bin/bash
+# -*- tab-width:4;indent-tabs-mode:nil -*-
+# ex: ts=4 sw=4 et
+
+ROOT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/watson
+VERSION=`cat ${ROOT_DIR}/watson/version.txt`
+# Version replace dots with dash
+VER=$(echo $VERSION | awk  '{gsub(/\./,"-",$0);printf $0}')
+
+check_virtualenv_active() {
+        if [ -z "$VIRTUAL_ENV" ]
+        then
+            echo 'This command needs to run while virtualenvironment is active.'
+            exit 1
+        fi
+}
+
+check_virtualenv_not_active() {
+        if ! [ -z "$VIRTUAL_ENV" ]
+        then
+            echo 'This command needs to run while virtualenvironment is NOT active.'
+            exit 1
+        fi
+}
+echo "Watson Version ${VER}"
+case "$1" in
+server)
+    check_virtualenv_active
+    cd "$ROOT_DIR" || exit; \
+    python manage.py runserver
+    ;;
+worker)
+    check_virtualenv_active
+    # -B is for beat. For multiple workers only one of them needs to have -B
+    cd $ROOT_DIR ; celery worker -A watson -c 4 -l info -B
+    ;;
+beat)
+    check_virtualenv_active
+    # -B is for beat. For multiple workers only one of them needs to have -B
+    cd $ROOT_DIR ; celery beat -A watson -l info
+    ;;
+reset_db)
+    cd "$ROOT_DIR" || exit ; \
+    python manage.py reset_db --noinput ; \
+    rm ./*/migrations/000*.py ; \
+    python manage.py makemigrations ; \
+    python manage.py migrate ; \
+    ;;
+*)
+    echo Command not found: "$1";
+    ;;
+esac

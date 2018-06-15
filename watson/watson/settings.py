@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,8 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    # DRF
+    'rest_framework',
+    'rest_framework.authtoken',
+    'corsheaders',
+    # INTERNAL APPS
     'accounts',
+    'projects',
 ]
 
 MIDDLEWARE = [
@@ -129,3 +135,40 @@ STATIC_URL = '/static/'
 # Accounts configuration #
 ##########################
 AUTH_USER_MODEL = 'accounts.User'
+
+#################
+# CELERY CONFIG #
+#################
+MINUTE = 60
+
+# CELERY_BEAT_SCHEDULE = {
+#     'sahibinden-fetch-realestate-urls': {
+#         'task': 'sahibinden.tasks.fetch_realestate_list',
+#         'schedule': datetime.timedelta(minutes=10)
+#     },
+# }
+
+
+CELERY_BROKER_URL = 'filesystem://'
+# CELERY_RESULT_BACKEND = 'file:///var/celery/results'
+broker_dir = '/tmp/watson/celery'
+CELERY_BROKER_URL = 'filesystem://'
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    "data_folder_in": os.path.join(broker_dir, "out"),
+    "data_folder_out": os.path.join(broker_dir, "out"),
+    "data_folder_processed": os.path.join(broker_dir, "processed"),
+}
+
+RESULT_PATH = os.path.join(broker_dir, "result")
+CELERY_RESULT_BACKEND = 'file://' + RESULT_PATH
+
+
+def ensure_dir(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
+ensure_dir(CELERY_BROKER_TRANSPORT_OPTIONS['data_folder_in'])
+ensure_dir(CELERY_BROKER_TRANSPORT_OPTIONS['data_folder_out'])
+ensure_dir(CELERY_BROKER_TRANSPORT_OPTIONS['data_folder_processed'])
+ensure_dir(RESULT_PATH)

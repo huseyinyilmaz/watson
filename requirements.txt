@@ -10,3 +10,5 @@ djangorestframework
 drf-extensions
 google-cloud-storage
 django-health-check
+
+celery

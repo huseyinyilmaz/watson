@@ -3,6 +3,8 @@
 import logging
 from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager
+from django.db import models
+from django.utils.text import slugify
 
 logger = logging.getLogger(__name__)
 
@@ -37,3 +39,12 @@ class UserManager(BaseUserManager):
         """Create a new superuser."""
         return self._create_user(email, password, True, True,
                                  **extra_fields)
+
+
+class OrganizationManager(models.Manager):
+
+    def create_for_user(self, user):
+        # XXX slug should be unique
+        obj = self.model.objects.create(name=user.email, slug=slugify(user.email))
+        obj.save()
+        obj.users.add(user)

@@ -67,10 +67,21 @@ class User(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
 
-class Company(models.Model):
+class Organization(models.Model):
 
-    """Company Model."""
-
+    """Organization Model."""
+    # mandatory fields
+    slug = models.SlugField(unique=True)
     name = models.CharField(max_length=255)
-    slug = models.SlugField()
+    # optional field
+    company = models.CharField(max_length=1024, blank=True)
+    location = models.CharField(max_length=2048, blank=True)
+    email = models.EmailField(blank=True)
+    url = models.URLField(blank=True)
+
     users = models.ManyToManyField(User)
+
+    objects = managers.OrganizationManager()
+
+    def __str__(self):
+        return f'{self.name}'
