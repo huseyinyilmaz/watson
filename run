@@ -46,6 +46,10 @@ reset_db)
     python manage.py makemigrations ; \
     python manage.py migrate ; \
     ;;
+run_web)
+    cd "$ROOT_DIR" || exit ; \
+    docker-compose run --service-ports web
+    ;;
 *)
     echo Command not found: "$1";
     ;;

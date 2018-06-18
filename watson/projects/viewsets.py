@@ -13,13 +13,3 @@ class ProjectViewSet(mixins.ListModelMixin,
 
     queryset = models.Project.objects.all()
     serializer_class = serializers.ProjectSerializer
-
-
-class ScreenshotViewSet(mixins.ListModelMixin,
-                        mixins.RetrieveModelMixin,
-                        mixins.CreateModelMixin,
-                        mixins.DestroyModelMixin,
-                        viewsets.GenericViewSet):
-
-    queryset = models.Screenshot.objects.all()
-    serializer_class = serializers.ScreenshotSerializer

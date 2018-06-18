@@ -20,9 +20,11 @@ from django.conf.urls import url
 
 import accounts.routers
 import projects.routers
+import screenshots.routers
 
 urlpatterns = [
     url(r'^api/v1/accounts/', include(accounts.routers.router.urls)),
     url(r'^api/v1/projects/', include(projects.routers.router.urls)),
+    url(r'^api/v1/screenshots/', include(screenshots.routers.router.urls)),
     path('admin/', admin.site.urls),
 ]

@@ -1,17 +1,43 @@
-BROWSER_CHROME_HEADLESS = 'chrome'
-BROWSER_FIREFOX_HEADLESS = 'ff'
+from dataclasses import dataclass
+from enum import Enum
 
-BROWSER_CHOICES = [
-    (BROWSER_CHROME_HEADLESS, BROWSER_CHROME_HEADLESS),
-    (BROWSER_FIREFOX_HEADLESS, BROWSER_FIREFOX_HEADLESS),
+
+class Browser(Enum):
+    CHROME = "chrome"
+    FIREFOX = "firefox"
+
+
+@dataclass(frozen=True)
+class Dimension:
+    name: str
+    width: int
+    height: int
+
+
+@dataclass(frozen=True)
+class Environment:
+    '''Class for keeping track of an item in inventory.'''
+    dimension: Dimension
+    browser: Browser
+
+
+dimensions_list = [
+    Dimension(name='Galaxy S5', width=260, height=640),
+    Dimension(name='IPad', width=768, height=1024),
+    Dimension(name='Desktop', width=1024, height=768),
+    Dimension(name='Macbook', width=1440, height=900),
 ]
 
-SIZE_GALAXY_S5 = '360x640'
-SIZE_IPAD = '768x1024'
-SIZE_MACBOOK = '1440x900'
 
-SIZE_CHOICES = [
-    ('Galaxy S5 (260x640)', SIZE_GALAXY_S5),
-    ('IPad (768x1024)', SIZE_IPAD),
-    ('Macbook (1440x900)', SIZE_MACBOOK),
+dimensions = {dimension.name: dimension
+              for dimension in dimensions_list}
+
+DIMENSIONS_CHOICES = [
+    (dimensions.name, dimensions)
+    for d in dimensions_list
+]
+
+BROWSERS_CHOICES = [
+    (Browser[b], Browser[b])
+    for b in Browser
 ]

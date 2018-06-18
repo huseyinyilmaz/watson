@@ -12,3 +12,9 @@ google-cloud-storage
 django-health-check
 
 celery
+Pillow
+
+selenium
+
+ipdb
+ipython

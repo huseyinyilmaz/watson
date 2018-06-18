@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import datetime
+from os.path import expanduser
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
     # INTERNAL APPS
     'accounts',
     'projects',
+    'screenshots',
 ]
 
 MIDDLEWARE = [
@@ -148,27 +151,91 @@ MINUTE = 60
 #     },
 # }
 
+# CELERY_BROKER_URL = 'filesystem://'
+# # CELERY_RESULT_BACKEND = 'file:///var/celery/results'
+# broker_dir = '/tmp/watson/celery'
+# CELERY_BROKER_URL = 'filesystem://'
+# CELERY_BROKER_TRANSPORT_OPTIONS = {
+#     "data_folder_in": os.path.join(broker_dir, "out"),
+#     "data_folder_out": os.path.join(broker_dir, "out"),
+#     "data_folder_processed": os.path.join(broker_dir, "processed"),
+# }
 
-CELERY_BROKER_URL = 'filesystem://'
-# CELERY_RESULT_BACKEND = 'file:///var/celery/results'
-broker_dir = '/tmp/watson/celery'
-CELERY_BROKER_URL = 'filesystem://'
-CELERY_BROKER_TRANSPORT_OPTIONS = {
-    "data_folder_in": os.path.join(broker_dir, "out"),
-    "data_folder_out": os.path.join(broker_dir, "out"),
-    "data_folder_processed": os.path.join(broker_dir, "processed"),
+# RESULT_PATH = os.path.join(broker_dir, "result")
+# CELERY_RESULT_BACKEND = 'file://' + RESULT_PATH
+
+
+# def ensure_dir(directory):
+#     if not os.path.exists(directory):
+#         os.makedirs(directory)
+
+
+# ensure_dir(CELERY_BROKER_TRANSPORT_OPTIONS['data_folder_in'])
+# ensure_dir(CELERY_BROKER_TRANSPORT_OPTIONS['data_folder_out'])
+# ensure_dir(CELERY_BROKER_TRANSPORT_OPTIONS['data_folder_processed'])
+# ensure_dir(RESULT_PATH)
+
+CELERY_BROKER_URL = 'amqp://watson:watson@rabbitmq:5672/watsondev'
+CELERY_RESULT_BACKEND = 'amqp://watson:watson@rabbitmq:5672/watsondev'
+
+#####################
+# LOG CONFIGURATION #
+#####################
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': ('%(levelname)s %(name)s %(asctime)s %(module)s '
+                       '%(process)d %(thread)d %(message)s')
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        # 'file': {
+        #     'level': 'DEBUG',
+        #     # 'class': 'logging.FileHandler',
+        #     'class': 'logging.handlers.RotatingFileHandler',
+        #     'formatter': 'simple',
+        #     'filename': expanduser('~/logs/watson.log'),
+        # },
+
+
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+        'propagate': False,
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            # 'level': 'DEBUG',  # logs orm queries
+            'level': 'INFO',
+            'propagate': False,
+        },
+        # 'django.db': {
+        #     'handlers': ['console', 'file'],
+        #     'level': 'INFO',
+        #     'propagate': False,
+        # },
+
+        'sentry.errors': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+    }
 }
-
-RESULT_PATH = os.path.join(broker_dir, "result")
-CELERY_RESULT_BACKEND = 'file://' + RESULT_PATH
-
-
-def ensure_dir(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-
-ensure_dir(CELERY_BROKER_TRANSPORT_OPTIONS['data_folder_in'])
-ensure_dir(CELERY_BROKER_TRANSPORT_OPTIONS['data_folder_out'])
-ensure_dir(CELERY_BROKER_TRANSPORT_OPTIONS['data_folder_processed'])
-ensure_dir(RESULT_PATH)

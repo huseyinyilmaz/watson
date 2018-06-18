@@ -1,0 +1,62 @@
+version: '3'
+
+services:
+  web:
+    image: huseyinyilmaz/watson-dev-backend-base
+    command: sh -c "cd /watson/watson/ && python3 manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - worker
+      - rabbitmq
+    volumes:
+        - .:/watson
+    ports:
+      - "8000:8000"
+  worker:
+    image: huseyinyilmaz/watson-dev-backend-base
+    command: sh -c "cd /watson/watson/ && celery worker -A watson -c 4 -l info -B"
+    volumes:
+        - .:/watson
+    depends_on:
+      - selenium
+      - rabbitmq
+  rabbitmq:
+    image: rabbitmq:3.6-management-alpine
+    ports:
+      - 15671:15671
+      - 15672:15672
+      - 25672:25672
+    environment:
+      RABBITMQ_DEFAULT_USER: watson
+      RABBITMQ_DEFAULT_PASS: watson
+      RABBITMQ_DEFAULT_VHOST: watsondev
+###########################
+# SELENIUM SERVICES START #
+###########################
+  seleniumfirefox:
+    image: selenium/node-firefox-debug:3.12.0-boron
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium
+    environment:
+      # HUB_HOST: selenium
+      HUB_PORT_4444_TCP_ADDR: selenium
+      HUB_PORT_4444_TCP_PORT: 4444
+
+  seleniumchrome:
+    image: selenium/node-chrome-debug:3.12.0-boron
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium
+    environment:
+      # HUB_HOST: selenium
+      HUB_PORT_4444_TCP_ADDR: selenium
+      HUB_PORT_4444_TCP_PORT: 4444
+
+  # to check status of grid use his url:
+  # http://selenium.givingassistant.org:4444/grid/api/hub
+  selenium:
+    image: selenium/hub:3.12.0-boron
+    environment:
+      BROWSER_TIMEOUT: 10000
