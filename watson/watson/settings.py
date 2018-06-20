@@ -239,3 +239,9 @@ LOGGING = {
         },
     }
 }
+
+###################
+# WATSON SETTINGS #
+###################
+
+SELENIUM_COMMAND_EXECUTER = 'http://selenium:4444/wd/hub'

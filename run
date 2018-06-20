@@ -50,6 +50,15 @@ run_web)
     cd "$ROOT_DIR" || exit ; \
     docker-compose run --service-ports web
     ;;
+# VNC: Run these to view tests running on dev drivers.
+chrome)
+  open vnc://:secret@localhost:5900
+  ;;
+
+firefox)
+  open vnc://:secret@localhost:5901
+  ;;
+
 *)
     echo Command not found: "$1";
     ;;

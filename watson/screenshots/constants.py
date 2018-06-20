@@ -30,7 +30,7 @@ dimensions_list = [
 ]
 
 
-dimensions = {dimension.name: dimension
+dimensions = {dimension.code: dimension
               for dimension in dimensions_list}
 
 DIMENSIONS_CHOICES = [
@@ -42,6 +42,15 @@ BROWSERS_CHOICES = [
     (b.value, b.name)
     for b in Browser
 ]
+
+
+def get_dimension(code):
+    return dimensions[code]
+
+
+def get_browser(code):
+    return Browser(code)
+
 
 # BROWSER_CHROME_HEADLESS = 'chrome'
 # BROWSER_FIREFOX_HEADLESS = 'ff'
