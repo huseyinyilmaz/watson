@@ -11,10 +11,10 @@ class ScreenshotSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Create a token for user."""
         object = super().create(validated_data)
-        # task = tasks.process_screenshot.delay(object.pk)
+        task = tasks.process_screenshot.delay(object.pk)
         # response = task.get()
-        response = tasks.process_screenshot(object.pk)
-        logger.info('Task response = %s', response)
+        # tasks.process_screenshot(object.pk)
+        # logger.info('Task response = %s', response)
         return object
 
     class Meta:

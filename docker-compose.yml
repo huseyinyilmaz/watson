@@ -38,8 +38,8 @@ services:
       - /dev/shm:/dev/shm
     depends_on:
       - selenium
-    ports:
-      - "5901:5901"
+    # ports:
+    #   - "5901:5901"
     environment:
       # HUB_HOST: selenium
       HUB_PORT_4444_TCP_ADDR: selenium
@@ -49,8 +49,8 @@ services:
     image: selenium/node-chrome-debug:3.12.0-boron
     volumes:
       - /dev/shm:/dev/shm
-    ports:
-      - "5900:5900"
+    # ports:
+    #   - "5900:5900"
     depends_on:
       - selenium
     environment:
@@ -60,7 +60,10 @@ services:
 
   # to check status of grid use his url:
   # http://selenium.givingassistant.org:4444/grid/api/hub
+  # http://localhost:4444/grid/api/hub
   selenium:
     image: selenium/hub:3.12.0-boron
     environment:
       BROWSER_TIMEOUT: 10000
+    ports:
+      - "4444:4444"
