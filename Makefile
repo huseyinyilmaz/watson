@@ -18,6 +18,9 @@ restart: down up
 bash:
 	$(DOCKER_COMPOSE) exec web bash
 
+sh:
+	$(DOCKER_COMPOSE) exec web sh
+
 logs:
 	$(DOCKER_COMPOSE) logs
 
@@ -25,11 +28,18 @@ ps:
 	$(DOCKER_COMPOSE) ps
 
 reset_db:
-	$(DOCKER_COMPOSE) exec web	sh -c "cd /watson/watson; \
+	$(DOCKER_COMPOSE) exec web	sh -c " \
+		cd /watson/watson; \
 		python manage.py reset_db --noinput ; \
+		rm db.sqlite3 ; \
 		rm ./*/migrations/000*.py ; \
 		python manage.py makemigrations ; \
 		python manage.py migrate ;"
+
+user:
+	$(DOCKER_COMPOSE) exec web	sh -c " \
+		cd /watson/watson; \
+		python manage.py createsuperuser; "
 
 web:
 	$(DOCKER_COMPOSE) up --scale web=0 web ;

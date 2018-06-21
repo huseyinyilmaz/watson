@@ -16,5 +16,6 @@ Pillow
 
 selenium
 
+flake8
 ipdb
 ipython

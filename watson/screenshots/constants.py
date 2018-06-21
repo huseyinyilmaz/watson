@@ -7,6 +7,12 @@ class Browser(Enum):
     FIREFOX = "firefox"
 
 
+class Status(Enum):
+    PROCESSING = 'processing'
+    SUCCEESS = 'success'
+    FAILURE = 'failure'
+
+
 @dataclass(frozen=True)
 class Dimension:
     name: str
@@ -36,6 +42,11 @@ dimensions = {dimension.code: dimension
 DIMENSIONS_CHOICES = [
     (d.code, str(d))
     for d in dimensions_list
+]
+
+STATUS_CHOICES = [
+    (s.value, s.name)
+    for s in Status
 ]
 
 BROWSERS_CHOICES = [

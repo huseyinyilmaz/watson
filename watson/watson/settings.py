@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'corsheaders',
     # INTERNAL APPS
     'accounts',
-    'projects',
     'screenshots',
 ]
 
@@ -176,7 +175,7 @@ MINUTE = 60
 # ensure_dir(RESULT_PATH)
 
 CELERY_BROKER_URL = 'amqp://watson:watson@rabbitmq:5672/watsondev'
-CELERY_RESULT_BACKEND = 'amqp://watson:watson@rabbitmq:5672/watsondev'
+# CELERY_RESULT_BACKEND = 'amqp://watson:watson@rabbitmq:5672/watsondev'
 
 #####################
 # LOG CONFIGURATION #
