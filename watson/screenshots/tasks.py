@@ -65,5 +65,7 @@ def process_screenshot(screenshot_id):
         logger.info('Got driver %s', driver)
     except WebDriverException as e:
         logger.exception("Error in webdriver.")
-
+    except Exception as e:
+        driver.quit()
+        raise
     driver.quit()
