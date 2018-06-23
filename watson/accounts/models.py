@@ -38,9 +38,9 @@ class User(AbstractBaseUser, PermissionsMixin):
                                                 'accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=tz.now)
 
-    # user's state
+    # registration fields
+    registration_code = models.CharField(max_length=255, unique=True)
     email_verified = models.BooleanField(default=False)
-    # current users contact.
 
     #######################################################
 

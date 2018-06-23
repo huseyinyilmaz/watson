@@ -9,7 +9,7 @@ class Screenshot(TimeStampedModel):
     organization = models.ForeignKey(Organization,
                                      on_delete=models.CASCADE,)
     # Screenshot url
-    url = models.URLField()
+    address = models.URLField()
     # Delay after page load.
     delay = models.SmallIntegerField()
     # Page dimensions.
@@ -21,12 +21,12 @@ class Screenshot(TimeStampedModel):
         max_length=255,
         choices=constants.BROWSERS_CHOICES)
     # content hash of screenshot.
-    code = models.CharField(max_length=255)
+    code = models.CharField(max_length=255, blank=True)
     # status of screenshot
     status = models.CharField(max_length=255,
                               choices=constants.STATUS_CHOICES)
     # result/error explanation
-    result = models.TextField()
+    result = models.TextField(blank=True)
     # Result screenshot
     image = models.ImageField(
         blank=True,

@@ -5,7 +5,6 @@ from logging import getLogger
 from screenshots.models import Screenshot
 from screenshots.utils import get_driver
 from screenshots import constants
-from screenshots import utils
 from time import sleep
 from selenium.common.exceptions import WebDriverException
 import hashlib
@@ -13,7 +12,6 @@ import hashlib
 import base64
 import PIL
 import io
-import datetime
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 logger = getLogger(__name__)
@@ -27,13 +25,14 @@ def process_screenshot(screenshot_id):
     try:
         driver = get_driver(browser, dimension)
     except WebDriverException as e:
-        return
+        logger.exception('There were an error  getting the driver.')
+        raise
     try:
-        driver.get(screenshot.url)
-        sleep(3)
+        driver.get(screenshot.address)
+        sleep(screenshot.delay)
         height = driver.execute_script("return document.body.scrollHeight")
         driver.set_window_size(dimension.width, height)
-        sleep(screenshot.delay)
+        sleep(2)
         # get base64 image
         data = driver.get_screenshot_as_base64()
         # turn it into PIL image
@@ -51,18 +50,17 @@ def process_screenshot(screenshot_id):
         code = h.hexdigest()
         file_name = f'{code}.png'
         f = InMemoryUploadedFile(
-            binary,        # file
-            None,          # field_name
-            file_name,      # file name
+            binary,       # file
+            None,         # field_name
+            file_name,    # file name
             'image/png',  # content_type
-            binary.tell,    # size
-            None)          # content_type_extra
+            binary.tell,  # size
+            None)         # content_type_extra
         # save file to file backend.
         screenshot.image.save(f.name, f)
         screenshot.code = code
         screenshot.save()
-        logger.info('Got screenshot %s', screenshot)
-        logger.info('Got driver %s', driver)
+        logger.debug('Completed taking screenshot')
     except WebDriverException as e:
         logger.exception("Error in webdriver.")
     except Exception as e:

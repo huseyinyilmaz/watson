@@ -9,7 +9,7 @@ class Browser(Enum):
 
 class Status(Enum):
     PROCESSING = 'processing'
-    SUCCEESS = 'success'
+    SUCCESS = 'success'
     FAILURE = 'failure'
 
 

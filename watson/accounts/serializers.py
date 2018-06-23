@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.compat import authenticate
+from accounts.models import Organization
+from accounts.utils import generate_registration_code
 
 User = get_user_model()
 
@@ -57,6 +59,22 @@ class SessionSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
 
+    def create(self, validated_data):
+        validated_data['registration_code'] = generate_registration_code()
+        obj = User.objects.create_user(**validated_data)
+        Organization.objects.create_for_user(obj)
+        return obj
+
     class Meta:
         model = User
-        fields = '__all__'
+        #  fields = ['email', 'password']
+        fields = ['id', 'last_login', 'email', 'full_name', 'password',
+                  'date_joined', 'email_verified', 'is_active']
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'last_login': {'read_only': True},
+            'date_joined': {'read_only': True},
+            'email_verified': {'read_only': True},
+            'is_active': {'read_only': True},
+
+        }

@@ -15,6 +15,13 @@ Possible names
 --------------
 - Release checker project
 
+Ideas
+-----
+- screenshots.
+- perceptual diff.
+- compare your site against your design.
+- release check.
+
 Sources
 -------
 - https://github.com/fate0/pychrome/blob/master/pychrome/tab.py

@@ -45,6 +45,8 @@ class OrganizationManager(models.Manager):
 
     def create_for_user(self, user):
         # XXX slug should be unique
-        obj = self.model.objects.create(name=user.email, slug=slugify(user.email))
+        obj = self.model.objects.create(name=user.email,
+                                        slug=slugify(user.email))
         obj.save()
         obj.users.add(user)
+        return obj

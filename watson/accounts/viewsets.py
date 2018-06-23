@@ -13,6 +13,7 @@ User = get_user_model()
 
 class UserViewSet(mixins.ListModelMixin,
                   mixins.RetrieveModelMixin,
+                  mixins.CreateModelMixin,
                   viewsets.GenericViewSet):
 
     queryset = User.objects.all()
