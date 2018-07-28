@@ -9,7 +9,7 @@ from django.core.mail import send_mail
 from django.utils import timezone as tz
 
 from accounts import managers
-
+from screenshots.models import Screenshot
 
 class User(AbstractBaseUser, PermissionsMixin):
     """
@@ -80,6 +80,7 @@ class Organization(models.Model):
     url = models.URLField(blank=True)
 
     users = models.ManyToManyField(User)
+    screenshots = models.ManyToManyField(Screenshot)
 
     objects = managers.OrganizationManager()
 

@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -137,6 +138,12 @@ STATIC_URL = '/static/'
 # Accounts configuration #
 ##########################
 AUTH_USER_MODEL = 'accounts.User'
+
+##############################
+# CORS HEADERS configuration #
+##############################
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 #################
 # CELERY CONFIG #
@@ -237,6 +244,22 @@ LOGGING = {
             'propagate': False,
         },
     }
+}
+
+#######################################
+# Django Rest Framework configuration #
+#######################################
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'MAX_PAGINATE_BY': 100,
+    'PAGINATE_BY': 10,
+    'PAGINATE_BY_PARAM': 'page_size',
 }
 
 ###################

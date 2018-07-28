@@ -27,7 +27,7 @@ class Screenshot(TimeStampedModel):
                               choices=constants.STATUS_CHOICES)
     # result/error explanation
     result = models.TextField(blank=True)
-    # Result screenshot
+    # image file url.
     image = models.ImageField(
         blank=True,
         upload_to='media/projects-screenshot-image')

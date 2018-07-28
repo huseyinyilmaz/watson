@@ -13,6 +13,11 @@ class Status(Enum):
     FAILURE = 'failure'
 
 
+class ScreenshotType(Enum):
+    SCREENSHOT = 'screenshot'
+    SNAPSHOT = 'snapshot'
+
+
 @dataclass(frozen=True)
 class Dimension:
     name: str
@@ -52,6 +57,11 @@ STATUS_CHOICES = [
 BROWSERS_CHOICES = [
     (b.value, b.name)
     for b in Browser
+]
+
+SCREENSHOTTYPE_CHOICES = [
+    (s.value, s.name)
+    for s in ScreenshotType
 ]
 
 

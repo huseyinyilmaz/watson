@@ -19,7 +19,7 @@ class SessionSerializer(serializers.Serializer):
     """
 
     # write_only_fields = ['email', 'password']
-    email = serializers.CharField(label=_("Email"), write_only=True)
+    email = serializers.EmailField(label=_("Email"), write_only=True)
     password = serializers.CharField(
         label=_("Password"),
         style={'input_type': 'password'},
@@ -31,7 +31,6 @@ class SessionSerializer(serializers.Serializer):
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
-
         if email and password:
             user = authenticate(request=self.context.get('request'),
                                 email=email, password=password)
@@ -68,7 +67,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         #  fields = ['email', 'password']
-        fields = ['id', 'last_login', 'email', 'full_name', 'password',
+        fields = ['id', 'last_login', 'email', 'full_name',
                   'date_joined', 'email_verified', 'is_active']
         extra_kwargs = {
             'password': {'write_only': True},

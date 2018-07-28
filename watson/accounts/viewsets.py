@@ -19,8 +19,18 @@ class UserViewSet(mixins.ListModelMixin,
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
 
+    def get_queryset(self):
+        """If user is not admin user show only owned resources.
+
+        Change this with isAdminOrSelf permission?
+        """
+        user = self.request.user
+        queryset = User.objects.filter(pk=user.pk)
+        return queryset
+
 
 class SessionViewSet(mixins.CreateModelMixin,
+                     mixins.RetrieveModelMixin,
                      mixins.DestroyModelMixin,
                      viewsets.GenericViewSet):
 
@@ -45,14 +55,13 @@ class SessionViewSet(mixins.CreateModelMixin,
             userSerializer = serializers.UserSerializer(
                 user,
                 context={'request': request})
-            # profileSerializer = ProfileSerializer(
-            #     user.profile,
-            #     context={'request': request})
             response.update({
                 'user': userSerializer.data,
-                # 'profile': profileSerializer.data,
             })
         return response
+
+    def retrieve(self, request, key=None):
+        return Response({'key': key})
 
     def list(self, request):
         """List response."""

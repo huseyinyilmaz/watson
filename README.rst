@@ -21,6 +21,7 @@ Ideas
 - perceptual diff.
 - compare your site against your design.
 - release check.
+- placeit alternative: https://placeit.net/?startupstash
 
 Sources
 -------

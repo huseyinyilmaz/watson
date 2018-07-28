@@ -30,7 +30,6 @@ ps:
 reset_db:
 	$(DOCKER_COMPOSE) exec web	sh -c " \
 		cd /watson/watson; \
-		python manage.py reset_db --noinput ; \
 		rm db.sqlite3 ; \
 		rm ./*/migrations/000*.py ; \
 		python manage.py makemigrations ; \
