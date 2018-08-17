@@ -23,6 +23,11 @@ Ideas
 - release check.
 - placeit alternative: https://placeit.net/?startupstash
 
+Perceptual diff algorithm
+-------------------------
+- https://github.com/segmentio/niffy/blob/master/lib/diff.js#L73
+- https://stackoverflow.com/questions/29464174/perceptual-image-comparison
+
 Sources
 -------
 - https://github.com/fate0/pychrome/blob/master/pychrome/tab.py

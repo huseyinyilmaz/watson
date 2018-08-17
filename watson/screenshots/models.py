@@ -1,13 +1,9 @@
 from django.db import models
 from screenshots import constants
 from django_extensions.db.models import TimeStampedModel
-from accounts.models import Organization
 
 
 class Screenshot(TimeStampedModel):
-    # organization screenshot is connected to.
-    organization = models.ForeignKey(Organization,
-                                     on_delete=models.CASCADE,)
     # Screenshot url
     address = models.URLField()
     # Delay after page load.

@@ -24,5 +24,6 @@ import screenshots.routers
 urlpatterns = [
     url(r'^api/v1/accounts/', include(accounts.routers.router.urls)),
     url(r'^api/v1/screenshots/', include(screenshots.routers.router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls')),
     path('admin/', admin.site.urls),
 ]

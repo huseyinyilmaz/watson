@@ -1,0 +1,26 @@
+* Watson
+** What is watson
+   Perceptual diff utilities for non developers.
+   Watson provides provides utilities to take screenshots of a website and creates perceptual diffs of different setups of that website.
+
+** What is perceptual diff
+   Here is a talk explaining how perceptual diff works. https://www.youtube.com/watch?v=1wHr-O6gEfc
+
+** Utilities
+   - Take screenshot of a website. This can be used to host screenshots.
+   - Create a release with set of pages in one domain. Taking screen shot of a release creates screen shot of each page using chrome and firefox with different device sizes.
+   - Create perceptual diff between two releases. Creates a perceptual diff between each page/browser pairs.
+   - Create perceptual diff between each browser for each page/release pairs.
+   - Tell if page has a significant change using pereptual diff algorihms.
+   - Compare your design against your website.
+
+** Alternatives
+*** Screenshot alternatives
+   - https://web-capture.net/
+   - https://snapito.com/
+   - https://www.screenshotmachine.com/
+   - https://www.url2png.com/
+*** Perceptual diff alternatives
+   - https://percy.io/
+   - https://github.com/mapbox/pixelmatch
+   - https://segment.com/blog/perceptual-diffing-with-niffy/

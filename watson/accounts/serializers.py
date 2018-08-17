@@ -77,3 +77,10 @@ class UserSerializer(serializers.ModelSerializer):
             'is_active': {'read_only': True},
 
         }
+
+
+class OrganizationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Organization
+        fields = ['id', 'slug', 'name', 'company', 'location', 'email', 'url']
