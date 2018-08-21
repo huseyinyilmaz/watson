@@ -29,7 +29,7 @@ class Organization(models.Model):
     objects = managers.OrganizationManager()
 
     def __str__(self):
-        return f'{self.name}'
+        return f'${self.name}'
 
 
 class User(AbstractBaseUser, PermissionsMixin):

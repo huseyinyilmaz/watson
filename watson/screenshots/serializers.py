@@ -12,13 +12,11 @@ class ScreenshotSerializer(serializers.ModelSerializer):
     """
     ScreenshotSerializer
     """
-    organization = serializers.CharField(max_length=255)
+    organization = serializers.CharField(max_length=255, write_only=True)
 
     def create(self, validated_data):
         """Create a token for user."""
-        user = self.context['request'].user
-        import ipdb; ipdb.set_trace()
-
+        # user = self.context['request'].user
         object = super().create(validated_data)
         # task = tasks.process_screenshot.delay(object.pk)
         tasks.process_screenshot(object.pk)
@@ -35,6 +33,9 @@ class ScreenshotSerializer(serializers.ModelSerializer):
                 'initial': constants.Status.SUCCESS.value,
             }, 'delay': {'default': 3, 'initial': 3},
         }
+
         fields = ['id', 'address', 'delay', 'dimension', 'browser',
                   'status', 'image', 'organization']
+
+        write_only_fields = ['organization']
         read_only_fields = ['id', 'image', 'code', 'result', 'status']

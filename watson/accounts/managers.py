@@ -52,11 +52,12 @@ class UserManager(BaseUserManager):
 
 def get_slug(model, user, postfix=None):
     # Add a prefix to slug to make sure uniqness.
+    name_slug = slugify(user.full_name)
     if postfix is None:
         postfix_str = ''
     else:
         postfix_str = str(postfix)
-    slug = f'${slugify(user.name)}${postfix_str}'
+    slug = f'{name_slug}{postfix_str}'
 
     if model.objects.filter(slug=slug).exists():
         if postfix is None:
@@ -74,6 +75,6 @@ class OrganizationManager(models.Manager):
         # user might not be on db yet.(id might be None)
         # XXX slug should be unique
         obj = self.model.objects.create(email=user.email,
-                                        name=user.email,
+                                        name=user.full_name,
                                         slug=slug)
         return obj
