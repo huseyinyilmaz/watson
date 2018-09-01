@@ -28,16 +28,19 @@ dimensions_list = [
     Dimension(name='Macbook', width=1440, height=900),
 ]
 
+dim = dimensions_list[0]
+# import ipdb; ipdb.set_trace()
 
 dimensions = {dimension.name: dimension
               for dimension in dimensions_list}
 
 DIMENSIONS_CHOICES = [
-    (dimensions.name, dimensions)
-    for d in dimensions_list
+    (d.name, d) for d in dimensions_list
 ]
 
+# import ipdb; ipdb.set_trace()
+
 BROWSERS_CHOICES = [
-    (Browser[b], Browser[b])
+    (b.name, b.name)
     for b in Browser
 ]

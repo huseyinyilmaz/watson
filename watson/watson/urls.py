@@ -22,8 +22,10 @@ from django.conf.urls.static import static
 
 import accounts.routers
 import screenshots.routers
+import core.routers
 
 urlpatterns = [
+    url(r'^api/v1/core/', include(core.routers.router.urls)),
     url(r'^api/v1/accounts/', include(accounts.routers.router.urls)),
     url(r'^api/v1/screenshots/', include(screenshots.routers.router.urls)),
     url(r'^api-auth/', include('rest_framework.urls')),
