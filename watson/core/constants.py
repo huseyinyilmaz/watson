@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from dataclasses import field
 from enum import Enum
 
 
@@ -9,10 +10,10 @@ class Browser(Enum):
 
 @dataclass(frozen=True)
 class Dimension:
+    code: str
     name: str
     width: int
     height: int
-
 
 @dataclass(frozen=True)
 class Environment:
@@ -22,10 +23,10 @@ class Environment:
 
 
 dimensions_list = [
-    Dimension(name='Galaxy S5', width=260, height=640),
-    Dimension(name='IPad', width=768, height=1024),
-    Dimension(name='Desktop', width=1024, height=768),
-    Dimension(name='Macbook', width=1440, height=900),
+    Dimension(code='260X640', name='Galaxy S5', width=260, height=640),
+    Dimension(code='768X1024', name='IPad', width=768, height=1024),
+    Dimension(code='1024X768', name='Desktop', width=1024, height=768),
+    Dimension(code='1440X900', name='Macbook', width=1440, height=900),
 ]
 
 dim = dimensions_list[0]

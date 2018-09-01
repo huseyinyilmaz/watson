@@ -5,6 +5,7 @@ from dataclasses import asdict
 
 CONSTANTS = {
     'dimensions': [asdict(d) for d in constants.dimensions_list],
+    'browsers': [b.name for b in constants.Browser]
 }
 
 class ConstantsViewSet(viewsets.ViewSet):
