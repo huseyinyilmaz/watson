@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from screenshots import models
 from screenshots import tasks
-from screenshots import constants
+from core import constants
 
 from logging import getLogger
 
@@ -16,13 +16,22 @@ class ScreenshotSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create a token for user."""
-        # user = self.context['request'].user
+        request = self.context['request']
+        organization_id = request.data['organization']
+        organization = (request.user.organizations
+                        .filter(id=organization_id).first())
+        if not organization:
+            raise serializers.ValidationError(
+                {'non_field_errors':
+                 ['User is not belong to '
+                  f'organization with id { organization_id }']})
         object = super().create(validated_data)
-        # task = tasks.process_screenshot.delay(object.pk)
-        tasks.process_screenshot(object.pk)
-        # response = task.get()
+        organization.screenshots.add(object)
+        task = tasks.process_screenshot.delay(object.pk)
         # tasks.process_screenshot(object.pk)
-        # logger.info('Task response = %s', response)
+        response = task.get()
+        # tasks.process_screenshot(object.pk)
+        logger.info('Task response = %s', response)
         return object
 
     class Meta:
@@ -35,7 +44,9 @@ class ScreenshotSerializer(serializers.ModelSerializer):
         }
 
         fields = ['id', 'address', 'delay', 'dimension', 'browser',
-                  'status', 'image', 'organization']
+                  'status', 'result', 'image', 'organization', 'created',
+                  'modified']
 
         write_only_fields = ['organization']
-        read_only_fields = ['id', 'image', 'code', 'result', 'status']
+        read_only_fields = ['id', 'image', 'code', 'result', 'status',
+                            'result', 'created', 'modified']

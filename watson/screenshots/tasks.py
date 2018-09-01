@@ -4,7 +4,7 @@ from celery.task import task
 from logging import getLogger
 from screenshots.models import Screenshot
 from screenshots.utils import get_driver
-from screenshots import constants
+from core import constants
 from time import sleep
 from selenium.common.exceptions import WebDriverException
 import hashlib

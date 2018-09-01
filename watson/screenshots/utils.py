@@ -1,6 +1,7 @@
+from core import constants
+
 from screenshots import chrome
 from screenshots import firefox
-from screenshots import constants
 
 
 get_driver_map = {

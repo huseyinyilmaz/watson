@@ -68,6 +68,7 @@ def get_slug(model, user, postfix=None):
     else:
         return slug
 
+
 class OrganizationManager(models.Manager):
 
     def create_for_user(self, user):

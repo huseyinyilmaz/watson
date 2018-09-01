@@ -1,5 +1,5 @@
 from django.db import models
-from screenshots import constants
+from core import constants
 from django_extensions.db.models import TimeStampedModel
 
 
