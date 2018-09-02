@@ -13,5 +13,7 @@ class ConstantsViewSet(viewsets.ViewSet):
     """
     A simple ViewSet for listing or retrieving users.
     """
+    permission_classes = ()
+
     def list(self, request):
         return Response(CONSTANTS)
