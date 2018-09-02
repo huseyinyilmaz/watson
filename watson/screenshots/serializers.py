@@ -27,11 +27,8 @@ class ScreenshotSerializer(serializers.ModelSerializer):
                   f'organization with id { organization_id }']})
         object = super().create(validated_data)
         organization.screenshots.add(object)
-        task = tasks.process_screenshot.delay(object.pk)
-        # tasks.process_screenshot(object.pk)
-        response = task.get()
-        # tasks.process_screenshot(object.pk)
-        logger.info('Task response = %s', response)
+        # tasks.process_screenshot.delay(object.pk)
+        tasks.process_screenshot(object.pk)
         return object
 
     class Meta:

@@ -16,6 +16,35 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 
 logger = getLogger(__name__)
 
+get_height_script = """
+var body = document.body,
+    html = document.documentElement;
+
+var height = Math.max(
+  body.scrollHeight, body.offsetHeight,
+  html.clientHeight, html.scrollHeight, html.offsetHeight );
+
+return height;
+"""
+# "return document.body.scrollHeight"
+
+
+def get_height(driver):
+    return driver.execute_script(get_height_script)
+
+
+def set_dimensions(driver, dimension):
+    height = -1
+    new_height = get_height(driver)
+    count = 0
+    while height != new_height:
+        height, new_height = new_height, get_height(driver)
+        driver.set_window_size(dimension.width, height)
+        sleep(2)
+        count += 1
+        if count == 20:
+            return
+
 
 @task(ignore_result=True)
 def process_screenshot(screenshot_id):
@@ -29,10 +58,9 @@ def process_screenshot(screenshot_id):
         raise
     try:
         driver.get(screenshot.address)
+        driver.set_window_size(dimension.width, dimension.height)
         sleep(screenshot.delay)
-        height = driver.execute_script("return document.body.scrollHeight")
-        driver.set_window_size(dimension.width, height)
-        sleep(2)
+        set_dimensions(driver, dimension)
         # get base64 image
         data = driver.get_screenshot_as_base64()
         # turn it into PIL image
@@ -63,6 +91,8 @@ def process_screenshot(screenshot_id):
         logger.debug('Completed taking screenshot')
     except WebDriverException as e:
         logger.exception("Error in webdriver.")
+        driver.quit()
+        raise
     except Exception as e:
         driver.quit()
         raise
