@@ -257,9 +257,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    'MAX_PAGINATE_BY': 100,
-    'PAGINATE_BY': 10,
-    'PAGINATE_BY_PARAM': 'page_size',
+
+    'DEFAULT_PAGINATION_CLASS':
+    'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20,
 }
 
 ###################
