@@ -40,10 +40,10 @@ class ScreenshotSerializer(serializers.ModelSerializer):
             }, 'delay': {'default': 3, 'initial': 3},
         }
 
-        fields = ['id', 'address', 'delay', 'dimension', 'browser',
+        fields = ['id', 'code', 'address', 'delay', 'dimension', 'browser',
                   'status', 'result', 'image', 'organization', 'created',
                   'modified']
 
         write_only_fields = ['organization']
-        read_only_fields = ['id', 'image', 'code', 'result', 'status',
+        read_only_fields = ['id', 'code', 'image', 'code', 'result', 'status',
                             'result', 'created', 'modified']

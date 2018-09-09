@@ -27,6 +27,9 @@ class Environment:
     browser: Browser
 
 
+MAXIMUM_SCREENSHOT_HEIGHT = 20000
+
+
 dimensions_list = [
     Dimension(code='260X640', name='Galaxy S5', width=260, height=640),
     Dimension(code='768X1024', name='IPad', width=768, height=1024),
@@ -38,7 +41,7 @@ dimensions = {dimension.code: dimension
               for dimension in dimensions_list}
 
 DIMENSIONS_CHOICES = [
-    (d.code, d) for d in dimensions_list
+    (d.code, str(d)) for d in dimensions_list
 ]
 
 BROWSERS_CHOICES = [
@@ -50,6 +53,7 @@ STATUS_CHOICES = [
     (s.value, s.name)
     for s in Status
 ]
+
 
 def get_dimension(code):
     return dimensions[code]

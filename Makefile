@@ -10,7 +10,7 @@ down:
 	$(DOCKER_COMPOSE) down --remove-orphans
 
 up:
-	$(DOCKER_COMPOSE) up --force-recreate --build
+	$(DOCKER_COMPOSE) up --force-recreate --build --detach
 
 restart: down up
 
@@ -23,6 +23,9 @@ sh:
 
 logs:
 	$(DOCKER_COMPOSE) logs
+
+watch:
+	$(DOCKER_COMPOSE) logs -f
 
 ps:
 	$(DOCKER_COMPOSE) ps

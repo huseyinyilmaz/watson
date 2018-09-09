@@ -1,9 +1,12 @@
 from django.db import models
 from core import constants
 from django_extensions.db.models import TimeStampedModel
+import uuid
 
 
 class Screenshot(TimeStampedModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
     # Screenshot url
     address = models.URLField()
     # Delay after page load.

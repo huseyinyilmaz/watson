@@ -18,6 +18,7 @@ class ScreenshotViewSet(mixins.ListModelMixin,
     """
     serializer_class = serializers.ScreenshotSerializer
 
+
     def get_queryset(self):
         organization_id = self.request.query_params.get('organization')
         if organization_id:
