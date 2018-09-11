@@ -33,7 +33,7 @@ services:
 # SELENIUM SERVICES START #
 ###########################
   seleniumfirefox:
-    image: selenium/node-firefox-debug:3.12.0-boron
+    image: selenium/node-firefox-debug:3.14
     volumes:
       - /dev/shm:/dev/shm
     depends_on:
@@ -46,7 +46,7 @@ services:
       HUB_PORT_4444_TCP_PORT: 4444
 
   seleniumchrome:
-    image: selenium/node-chrome-debug:3.12.0-boron
+    image: selenium/node-chrome-debug:3.14
     volumes:
       - /dev/shm:/dev/shm
     ports:
@@ -61,7 +61,7 @@ services:
   # to check status of grid use his url:
   # http://localhost:4444/grid/api/hub
   selenium:
-    image: selenium/hub:3.12.0-boron
+    image: selenium/hub:3.14
     environment:
       BROWSER_TIMEOUT: 10000
     ports:
