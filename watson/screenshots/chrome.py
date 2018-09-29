@@ -18,3 +18,6 @@ def get_driver(dimension):
         desired_capabilities=options.to_capabilities(),
     )
     return driver
+
+    # mobile_emulation = { "deviceName": "Nexus 5" }
+    # chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)

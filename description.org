@@ -24,3 +24,5 @@
    - https://percy.io/
    - https://github.com/mapbox/pixelmatch
    - https://segment.com/blog/perceptual-diffing-with-niffy/
+*** Change tracker alternatives
+   - https://obserwise.datapare.com/

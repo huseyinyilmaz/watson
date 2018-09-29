@@ -16,6 +16,10 @@ Pillow
 
 selenium
 
+# development
 flake8
 ipdb
 ipython
+pydotplus
+Werkzeug
+django-debug-toolbar

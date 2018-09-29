@@ -160,6 +160,7 @@ class Page:
     def save_screenshot(self):
         # get base64 image
         data = self.driver.get_screenshot_as_base64()
+        # import ipdb; ipdb.set_trace()
         # turn it into PIL image
         image_data = io.BytesIO(base64.b64decode(data))
         image = PIL.Image.open(image_data)
@@ -184,8 +185,14 @@ class Page:
             binary.tell,  # size
             None)         # content_type_extra
         # save file to file backend.
+        result = {
+            'success': True,
+            'width': image.width,
+            'height': image.height,
+        }
         self.screenshot.image.save(f.name, f)
         self.screenshot.code = code
+        self.screenshot.result = json.dumps(result)
         self.screenshot.save()
 
     def get_page_width(self):

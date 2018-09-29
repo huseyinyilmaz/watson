@@ -30,6 +30,11 @@ watch:
 ps:
 	$(DOCKER_COMPOSE) ps
 
+graph_models:
+	$(DOCKER_COMPOSE) exec web	sh -c " \
+		cd /watson/watson; \
+		python manage.py graph_models -o models.png --all --group-models;"
+
 reset_db:
 	$(DOCKER_COMPOSE) exec web	sh -c " \
 		cd /watson/watson; \
