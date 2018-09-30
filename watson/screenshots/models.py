@@ -31,15 +31,6 @@ class ScreenshotBase(PageBase):
         max_length=255,
         choices=constants.DEVICE_CHOICES)
 
-    # Page dimensions.
-    dimension = models.CharField(
-        max_length=255,
-        choices=constants.DIMENSIONS_CHOICES)
-    # Browser used for screenshot
-    browser = models.CharField(
-        max_length=255,
-        choices=constants.BROWSERS_CHOICES)
-
     class Meta:
         abstract = True
 
@@ -97,7 +88,7 @@ class ScreenshotSnapshot(ScreenshotBase):
     screenshot = models.CharField(max_length=255, blank=True, null=False)
     pagesnapshot = models.ForeignKey(PageSnapshot,
                                      on_delete=models.CASCADE,
-                                     blank=False, null=False)
+                                     blank=True, null=False)
 
     class Meta:
         indexes = [

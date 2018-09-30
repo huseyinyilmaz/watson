@@ -6,7 +6,7 @@ from django.conf import settings
 
 # https://chromium.googlesource.com/chromium/src/+/master/chrome/common/chrome_switches.cc
 # http://www.assertselenium.com/java/list-of-chrome-driver-command-line-arguments/
-def get_driver(dimension):
+def get_driver(device):
     options = Options()
     # options.set_headless(True)
     # options.add_argument('--hide-scrollbars')

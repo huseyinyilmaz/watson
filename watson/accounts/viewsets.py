@@ -18,6 +18,8 @@ class UserViewSet(mixins.ListModelMixin,
                   mixins.CreateModelMixin,
                   viewsets.GenericViewSet):
 
+    permission_classes = ()
+
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
 

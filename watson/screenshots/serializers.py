@@ -8,7 +8,7 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 
-class ScreenshotSerializer(serializers.ModelSerializer):
+class ScreenshotSnapshotSerializer(serializers.ModelSerializer):
     """
     ScreenshotSerializer
     """
@@ -26,13 +26,13 @@ class ScreenshotSerializer(serializers.ModelSerializer):
                  ['User is not belong to '
                   f'organization with id { organization_id }']})
         object = super().create(validated_data)
-        organization.screenshots.add(object)
+        # organization.screenshots.add(object)
         # tasks.process_screenshot.delay(object.pk)
         tasks.process_screenshot(object.pk)
         return object
 
     class Meta:
-        model = models.Screenshot
+        model = models.ScreenshotSnapshot
         extra_kwargs = {
             'status': {
                 'default': constants.Status.PROCESSING.value,
@@ -40,9 +40,9 @@ class ScreenshotSerializer(serializers.ModelSerializer):
             }, 'delay': {'default': 3, 'initial': 3},
         }
 
-        fields = ['id', 'code', 'address', 'delay', 'dimension', 'browser',
+        fields = ['id', 'code', 'url', 'delay', 'device',
                   'status', 'result', 'image', 'organization', 'created',
-                  'modified']
+                  'modified', 'screenshot', 'pagesnapshot']
 
         write_only_fields = ['organization']
         read_only_fields = ['id', 'code', 'image', 'code', 'result', 'status',

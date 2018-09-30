@@ -5,7 +5,6 @@ from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager
 from django.db import models
 from django.utils.text import slugify
-from uuid import uuid4
 
 logger = logging.getLogger(__name__)
 
@@ -24,14 +23,12 @@ class UserManager(BaseUserManager):
         email = self.normalize_email(email)
         if not email:
             raise ValueError('The given email must be set')
-        registration_code = uuid4().hex
 
         user = self.model(email=email,
                           is_staff=is_staff,
                           is_active=True,
                           is_superuser=is_superuser,
                           date_joined=now,
-                          registration_code=registration_code,
                           **extra_fields)
         user.set_password(password)
         user.create_organization()

@@ -59,7 +59,6 @@ class SessionSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
-        validated_data['registration_code'] = generate_registration_code()
         obj = User.objects.create_user(**validated_data)
         Organization.objects.create_for_user(obj)
         return obj
@@ -69,8 +68,9 @@ class UserSerializer(serializers.ModelSerializer):
         #  fields = ['email', 'password']
         fields = ['id', 'email', 'full_name',
                   'date_joined', 'email_verified',
-                  'default_organization']
+                  'default_organization', 'password']
         extra_kwargs = {
+            'default_organization': {'required': False},
             'password': {'write_only': True},
             'date_joined': {'read_only': True},
             'email_verified': {'read_only': True},

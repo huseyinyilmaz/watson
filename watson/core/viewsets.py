@@ -4,8 +4,7 @@ from rest_framework.response import Response
 from dataclasses import asdict
 
 CONSTANTS = {
-    'dimensions': [asdict(d) for d in constants.dimensions_list],
-    'browsers': [{'name': b.name, 'value': b.value} for b in constants.Browser]
+    'devices': [asdict(d) for d in constants.device_list],
 }
 
 

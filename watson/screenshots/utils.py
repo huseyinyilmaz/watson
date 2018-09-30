@@ -4,14 +4,14 @@ from screenshots import chrome
 from screenshots import firefox
 
 
-get_driver_map = {
-    constants.Browser.CHROME: chrome.get_driver,
-    constants.Browser.FIREFOX: firefox.get_driver,
+get_backend_map = {
+    constants.BACKEND.CHROME: chrome.get_driver,
+    constants.BACKEND.FIREFOX: firefox.get_driver,
 }
 
 
-def get_driver(browser, dimension):
-    if browser in get_driver_map:
-        return get_driver_map[browser](dimension)
+def get_driver(device):
+    if device in get_backend_map:
+        return get_backend_map[device](device)
     else:
         return None

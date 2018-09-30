@@ -9,12 +9,13 @@ from django.core.mail import send_mail
 from django.utils import timezone as tz
 
 from accounts import managers
-from screenshots.models import Screenshot
+import uuid
 
 
 class Organization(models.Model):
 
     """Organization Model."""
+
     # mandatory fields
     slug = models.SlugField(unique=True)
     name = models.CharField(max_length=255)
@@ -24,12 +25,10 @@ class Organization(models.Model):
     email = models.EmailField(blank=True)
     url = models.URLField(blank=True)
 
-    screenshots = models.ManyToManyField(Screenshot)
-
     objects = managers.OrganizationManager()
 
     def __str__(self):
-        return f'${self.name}'
+        return f'{self.name}'
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -60,7 +59,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(_('date joined'), default=tz.now)
 
     # registration fields
-    registration_code = models.CharField(max_length=255, unique=True)
+    registration_code = models.UUIDField(default=uuid.uuid4,
+                                         editable=False)
     email_verified = models.BooleanField(default=False)
     #######################################################
 

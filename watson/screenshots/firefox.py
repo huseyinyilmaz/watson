@@ -9,7 +9,7 @@ from django.conf import settings
 # http://kb.mozillazine.org/Category:Preferences
 
 
-def get_driver(dimension):
+def get_driver(device):
     fp = FirefoxProfile()
     # fp.set_preference('media.navigator.permission.disabled', True)
     fp.update_preferences()
