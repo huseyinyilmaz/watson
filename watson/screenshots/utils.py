@@ -5,8 +5,8 @@ from screenshots import firefox
 
 
 get_backend_map = {
-    constants.BACKEND.CHROME: chrome.get_driver,
-    constants.BACKEND.FIREFOX: firefox.get_driver,
+    constants.Backend.CHROME: chrome.get_driver,
+    constants.Backend.FIREFOX: firefox.get_driver,
 }
 
 

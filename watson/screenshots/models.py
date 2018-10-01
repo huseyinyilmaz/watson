@@ -7,7 +7,7 @@ import uuid
 #####################
 # Screenshot Models #
 #####################
-class Release(TimeStampedModel):
+class Project(TimeStampedModel):
     name = models.CharField(max_length=255, blank=True, unique=True)
 
 
@@ -20,7 +20,7 @@ class PageBase(TimeStampedModel):
 
 
 class Page(PageBase):
-    release = models.ForeignKey(Release, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
 
 class ScreenshotBase(PageBase):
@@ -42,19 +42,19 @@ class Screenshot(ScreenshotBase):
 #####################
 # Snapshot Models #
 #####################
-class ReleaseSnapshot(TimeStampedModel):
-    release = models.CharField(max_length=255)
+class ProjectSnapshot(TimeStampedModel):
+    project = models.CharField(max_length=255)
     organization = models.CharField(max_length=255)
 
     class Meta:
         indexes = [
-            models.Index(fields=['release']),
+            models.Index(fields=['project']),
             models.Index(fields=['organization']),
         ]
 
 
 class PageSnapshot(PageBase):
-    releasesnapshot = models.ForeignKey(ReleaseSnapshot,
+    projectsnapshot = models.ForeignKey(ProjectSnapshot,
                                         on_delete=models.CASCADE)
     page = models.CharField(max_length=255)
     organization = models.CharField(max_length=255)

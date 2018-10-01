@@ -58,4 +58,4 @@ web:
 		-p 8000:8000 \
 		--network=watson_default \
 		huseyinyilmaz/watson-dev-backend-base \
-		sh -c "cd /watson/watson/ && python3 manage.py runserver 0.0.0.0:8000" ;
+		sh -c "cd /watson/watson/ && python3 manage.py runserver_plus 0.0.0.0:8000" ;

@@ -212,12 +212,12 @@ class FirefoxPage(Page):
 
 
 PAGE_MAP = {
-    constants.Browser.FIREFOX: FirefoxPage,
-    constants.Browser.CHROME: ChromePage,
+    constants.Backend.FIREFOX: FirefoxPage,
+    constants.Backend.CHROME: ChromePage,
 }
 
 
 def get_page(screenshot_id):
     screenshot = Screenshot.objects.get(id=screenshot_id)
-    browser = constants.get_browser(screenshot.browser)
-    return PAGE_MAP[browser](screenshot)
+    device = constants.get_device(screenshot.device)
+    return PAGE_MAP[device.backend](screenshot)

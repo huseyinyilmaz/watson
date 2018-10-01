@@ -3,8 +3,13 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from dataclasses import asdict
 
+devices = {}
+
+for d in (asdict(d) for d in constants.device_list):
+    d['backend'] = d['backend'].value
+    devices[d['code']] = d
 CONSTANTS = {
-    'devices': [asdict(d) for d in constants.device_list],
+    'devices': devices,
 }
 
 
