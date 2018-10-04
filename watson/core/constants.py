@@ -42,7 +42,7 @@ devices = { d.code: d for d in device_list}
 DEVICE_CHOICES = [(d.code, str(d)) for d in device_list]
 
 def get_device(code):
-    return dimensions[code]
+    return devices[code]
 
 class Status(Enum):
     PROCESSING = 'processing'

@@ -167,7 +167,7 @@ def process_screenshot(screenshot_id):
         page.adjust_dimension()
         page.save_screenshot()
         logger.debug('Screenshot dimensions after save: %s',
-                     page._current_dimension)
+                     page._current_device)
         logger.debug('Info: %s', page.get_info())
     except WebDriverException as e:
         logger.exception("Error in webdriver.")

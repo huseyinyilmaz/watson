@@ -1,15 +1,21 @@
-from django.db import models
-from core import constants
-from django_extensions.db.models import TimeStampedModel
 import uuid
+
+from django.db import models
+
+from django_extensions.db.models import TimeStampedModel
+
+from accounts.models import Organization
+from core import constants
+
 
 
 #####################
 # Screenshot Models #
 #####################
 class Project(TimeStampedModel):
-    name = models.CharField(max_length=255, blank=True, unique=True)
-
+    slug = models.SlugField()
+    name = models.CharField(max_length=255, blank=True, null=False)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
 
 class PageBase(TimeStampedModel):
     # Screenshot url
@@ -42,20 +48,8 @@ class Screenshot(ScreenshotBase):
 #####################
 # Snapshot Models #
 #####################
-class ProjectSnapshot(TimeStampedModel):
-    project = models.CharField(max_length=255)
-    organization = models.CharField(max_length=255)
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['project']),
-            models.Index(fields=['organization']),
-        ]
-
 
 class PageSnapshot(PageBase):
-    projectsnapshot = models.ForeignKey(ProjectSnapshot,
-                                        on_delete=models.CASCADE)
     page = models.CharField(max_length=255)
     organization = models.CharField(max_length=255)
 
@@ -88,7 +82,7 @@ class ScreenshotSnapshot(ScreenshotBase):
     screenshot = models.CharField(max_length=255, blank=True, null=False)
     pagesnapshot = models.ForeignKey(PageSnapshot,
                                      on_delete=models.CASCADE,
-                                     blank=True, null=False)
+                                     blank=True, null=True)
 
     class Meta:
         indexes = [

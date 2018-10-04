@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from screenshots.models import Screenshot
+from screenshots.models import ScreenshotSnapshot
 from screenshots.utils import get_driver
 from core import constants
 from time import sleep
@@ -56,19 +56,17 @@ class Page:
 
     def __init__(self, screenshot):
         self.screenshot = screenshot
-        self.dimension = constants.get_dimension(self.screenshot.dimension)
-        self.browser = constants.get_browser(self.screenshot.browser)
+        self.device = constants.get_device(self.screenshot.device)
         try:
-            self.driver = get_driver(self.browser, self.dimension)
+            self.driver = get_driver(self.device)
             logger.debug('Driver instance created.')
         except WebDriverException as e:
             logger.exception('There were an error  getting the driver.')
             raise
 
-    def set_window_size(self, dimension):
-        self._current_dimension = dimension
-        self.driver.set_window_size(dimension.width,
-                                    dimension.height)
+    def set_window_size(self, device):
+        self._current_device = device
+        self.driver.set_window_size(device.width, device.height)
 
     def scroll_down(self):
         height = self.get_page_height()
@@ -76,8 +74,8 @@ class Page:
 
     def load(self):
         """Load the page and wait for screenshot delay."""
-        self.driver.get(self.screenshot.address)
-        self.set_window_size(self.dimension)
+        self.driver.get(self.screenshot.url)
+        self.set_window_size(self.device)
         sleep(self.screenshot.delay)
 
     def get_info(self):
@@ -110,8 +108,8 @@ class Page:
         logger.debug('Adjusting page width')
         # logger.debug('info = %s', info)
         inner_width = self.get_page_width()
-        current_width = self._current_dimension.width
-        target_width = self.dimension.width
+        current_width = self._current_device.width
+        target_width = self.device.width
         error_width = target_width - inner_width
         logger.debug('inner_width= %s, current_width= %s, error_width= %s',
                      inner_width,
@@ -122,31 +120,31 @@ class Page:
             return result
         else:
             new_width = current_width + error_width
-            new_dimension = dataclasses.replace(
-                self._current_dimension,
+            new_device = dataclasses.replace(
+                self._current_device,
                 width=new_width)
-            self.set_window_size(new_dimension)
+            self.set_window_size(new_device)
             self.adjust_width(True)
 
     def adjust_height(self, result=False):
         logger.debug('Adjusting page width')
         if self.has_scroll():
-            if self._current_dimension.height == constants.MAXIMUM_SCREENSHOT_HEIGHT:
+            if self._current_device.height == constants.MAXIMUM_SCREENSHOT_HEIGHT:
                 return result
             self.scroll_down()
             info = self.get_info()
-            new_height = (self._current_dimension.height +
+            new_height = (self._current_device.height +
                           info['window']['scrollY'])
             new_height = min(new_height, constants.MAXIMUM_SCREENSHOT_HEIGHT)
-            # current_height = self._current_dimension.height
-            new_dimension = dataclasses.replace(
-                self._current_dimension,
+            # current_height = self._current_device.height
+            new_device = dataclasses.replace(
+                self._current_device,
                 height=new_height)
-            logger.debug('Previous dim: %s', self._current_dimension)
-            logger.debug('Current dim: %s', new_dimension)
+            logger.debug('Previous dim: %s', self._current_device)
+            logger.debug('Current dim: %s', new_device)
             logger.debug('new height: %s', new_height)
             logger.debug('info: %s', self.get_info())
-            self.set_window_size(new_dimension)
+            self.set_window_size(new_device)
             return self.adjust_height(True)
         else:
             return False
@@ -218,6 +216,6 @@ PAGE_MAP = {
 
 
 def get_page(screenshot_id):
-    screenshot = Screenshot.objects.get(id=screenshot_id)
+    screenshot = ScreenshotSnapshot.objects.get(id=screenshot_id)
     device = constants.get_device(screenshot.device)
     return PAGE_MAP[device.backend](screenshot)

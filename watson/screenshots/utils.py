@@ -11,7 +11,7 @@ get_backend_map = {
 
 
 def get_driver(device):
-    if device in get_backend_map:
-        return get_backend_map[device](device)
+    if device.backend in get_backend_map:
+        return get_backend_map[device.backend](device)
     else:
         return None
