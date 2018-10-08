@@ -24,10 +24,15 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('email',)
     list_display = ('email', 'full_name', 'is_staff')
 
+
 class OrganizationAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
 
 
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug')
+
 
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Organization, OrganizationAdmin)
+admin.site.register(models.Project, ProjectAdmin)

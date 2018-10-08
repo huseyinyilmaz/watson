@@ -210,7 +210,7 @@ LOGGING = {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'formatter': 'verbose',
         },
         # 'file': {
         #     'level': 'DEBUG',
@@ -232,13 +232,13 @@ LOGGING = {
             'handlers': ['console'],
             # 'level': 'DEBUG',  # logs orm queries
             'level': 'INFO',
+            'propagate': True,
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
             'propagate': False,
         },
-        # 'django.db': {
-        #     'handlers': ['console', 'file'],
-        #     'level': 'INFO',
-        #     'propagate': False,
-        # },
 
         'sentry.errors': {
             'level': 'DEBUG',

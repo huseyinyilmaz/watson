@@ -47,3 +47,30 @@ class ScreenshotSnapshotSerializer(serializers.ModelSerializer):
         write_only_fields = ['organization']
         read_only_fields = ['id', 'code', 'image', 'code', 'result', 'status',
                             'result', 'created', 'modified']
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    """
+    ScreenshotSerializer
+    """
+    organization = serializers.CharField(max_length=255, write_only=True)
+
+    def create(self, validated_data):
+        """Create a token for user."""
+        request = self.context['request']
+        organization_id = request.data['organization']
+        organization = (request.user.organizations
+                        .filter(id=organization_id).first())
+        if not organization:
+            raise serializers.ValidationError(
+                {'non_field_errors':
+                 ['User is not belong to '
+                  f'organization with id { organization_id }']})
+        validated_data['organization'] = organization
+        object = super().create(validated_data)
+        return object
+
+    class Meta:
+        model = models.Project
+        fields = '__all__'
+        read_only_fields = ['slug']

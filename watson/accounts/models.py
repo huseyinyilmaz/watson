@@ -8,11 +8,13 @@ from django.contrib.auth.models import PermissionsMixin
 from django.core.mail import send_mail
 from django.utils import timezone as tz
 
+from django_extensions.db.models import TimeStampedModel
+
+from core.utils import get_slug
 from accounts import managers
 import uuid
 
-
-class Organization(models.Model):
+class Organization(TimeStampedModel):
 
     """Organization Model."""
 
@@ -25,7 +27,18 @@ class Organization(models.Model):
     email = models.EmailField(blank=True)
     url = models.URLField(blank=True)
 
-    objects = managers.OrganizationManager()
+    def save(self, *args, **kwargs):
+        is_created = not self.pk
+        result = super().save(*args, **kwargs)
+        if is_created:
+            # creat default project for organization.
+            Project.objects.create(
+                organization=self,
+                name='Default Project',
+                slug='default',
+                default=True,
+            )
+        return result
 
     def __str__(self):
         return f'{self.name}'
@@ -40,7 +53,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     ###################
     # REQUIRED FIELDS #
     ###################
-    full_name = models.CharField(_('full name'), max_length=30, blank=True)
+    full_name = models.CharField(_('full name'), max_length=30)
     email = models.EmailField(_('email address'), unique=True)
     ###################
     # OPTIONAL FIELDS #
@@ -91,5 +104,29 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Send an email to this User."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
-    def create_organization(self):
-        self.default_organization = Organization.objects.create_for_user(self)
+    def save(self, *args, **kwargs):
+        is_created = not self.pk
+        if is_created:
+            full_name = kwargs.get('full_name', self.full_name)
+            # create default organization.
+            slug = get_slug(Organization.objects.all(), full_name)
+            organization = Organization.objects.create(email=self.email,
+                                                       name=self.full_name,
+                                                       slug=slug)
+            self.default_organization = organization
+        result = super().save(*args, **kwargs)
+        if is_created:
+            self.organizations.add(self.default_organization)
+        return result
+
+
+class Project(TimeStampedModel):
+    slug = models.SlugField()
+    name = models.CharField(max_length=255, blank=True, null=False)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    default= models.BooleanField(default=False)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['slug']),
+        ]

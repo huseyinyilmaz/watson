@@ -4,18 +4,13 @@ from django.db import models
 
 from django_extensions.db.models import TimeStampedModel
 
-from accounts.models import Organization
 from core import constants
-
-
+from accounts.models import Project
 
 #####################
 # Screenshot Models #
 #####################
-class Project(TimeStampedModel):
-    slug = models.SlugField()
-    name = models.CharField(max_length=255, blank=True, null=False)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+
 
 class PageBase(TimeStampedModel):
     # Screenshot url
@@ -51,12 +46,12 @@ class Screenshot(ScreenshotBase):
 
 class PageSnapshot(PageBase):
     page = models.CharField(max_length=255)
-    organization = models.CharField(max_length=255)
+    project = models.CharField(max_length=255)
 
     class Meta:
         indexes = [
             models.Index(fields=['page']),
-            models.Index(fields=['organization']),
+            models.Index(fields=['project']),
         ]
 
 
@@ -66,8 +61,8 @@ class ScreenshotSnapshot(ScreenshotBase):
     # dimension => from ScreenshotBase
     # browser => from ScreenshotBase
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    # organization this screenshot belongs to
-    organization = models.CharField(max_length=255)
+    # project this screenshot belongs to
+    project = models.CharField(max_length=255)
     # content hash of screenshot.
     code = models.CharField(max_length=255, blank=True)
     # status of screenshot
@@ -87,5 +82,5 @@ class ScreenshotSnapshot(ScreenshotBase):
     class Meta:
         indexes = [
             models.Index(fields=['screenshot']),
-            models.Index(fields=['organization']),
+            models.Index(fields=['project']),
         ]

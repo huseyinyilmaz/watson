@@ -69,17 +69,24 @@ class SessionViewSet(mixins.CreateModelMixin,
     def get_response(self, request):
         """Return response for given view."""
         user = request.user
+        organization = user.default_organization
+        project = organization.project_set.get(default=True)
+
         logged_in = not user.is_anonymous
         response = {'logged_in': logged_in}
         if logged_in:
             userSerializer = serializers.UserSerializer(user)
             organizationSerializer = serializers.OrganizationSerializer(
-                user.organizations.all(),
-                many=True)
+                organization,
+                many=False)
+            projectSerializer = serializers.OrganizationSerializer(
+                project,
+                many=False)
 
             response.update({
                 'user': userSerializer.data,
-                'organizations': organizationSerializer.data,
+                'organization': organizationSerializer.data,
+                'project': projectSerializer.data,
             })
 
         return response
