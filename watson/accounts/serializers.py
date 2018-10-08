@@ -5,7 +5,8 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.compat import authenticate
 from accounts.models import Organization
-from accounts.utils import generate_registration_code
+from accounts.models import Project
+# from accounts.utils import generate_registration_code
 
 User = get_user_model()
 
@@ -82,3 +83,10 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ['id', 'slug', 'name', 'company', 'location', 'email', 'url']
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Project
+        fields = ['id', 'slug', 'name', 'organization', 'default']

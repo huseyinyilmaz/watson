@@ -6,7 +6,7 @@ from rest_framework import permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
-# from accounts import models
+from accounts import models
 from accounts import serializers
 from core.permissions import CustomPermission
 
@@ -79,7 +79,7 @@ class SessionViewSet(mixins.CreateModelMixin,
             organizationSerializer = serializers.OrganizationSerializer(
                 organization,
                 many=False)
-            projectSerializer = serializers.OrganizationSerializer(
+            projectSerializer = serializers.ProjectSerializer(
                 project,
                 many=False)
 
@@ -97,3 +97,35 @@ class SessionViewSet(mixins.CreateModelMixin,
     def list(self, request):
         """List response."""
         return Response(self.get_response(request))
+
+class ProjectViewSet(mixins.ListModelMixin,
+                     mixins.RetrieveModelMixin,
+                     mixins.CreateModelMixin,
+                     mixins.DestroyModelMixin,
+                     viewsets.GenericViewSet):
+    """
+    Creates new screenshot entry.
+
+    A screenshot will probably take around 10 seconds to complete.
+    After screenshot is ready, url will be added to image field on response.
+    """
+    serializer_class = serializers.ProjectSerializer
+
+    def get_queryset(self):
+        organization_id = self.request.query_params.get('organization')
+        if organization_id:
+            if (self.request.user.organizations
+                    .filter(id=organization_id).exists()):
+                projects = (models.Project.objects
+                            .filter(organization=organization_id))
+            else:
+                # user does not belong to organization
+                projects = models.Project.objects.none()
+        else:
+            organization_ids = self.request.user.organizations.values_list(
+                'id', flat=True)
+            # return screenshots that user can see.
+            projects = (models.Project.objects
+                        .filter(organization__in=organization_ids))
+
+        return projects
