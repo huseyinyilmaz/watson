@@ -9,6 +9,6 @@ router.register(r'organizations', viewsets.OrganizationViewSet,
 router.register(r'sessions', viewsets.SessionViewSet,
                 base_name='accounts-sessions')
 
-router.register(r'project',
+router.register(r'projects',
                 viewsets.ProjectViewSet,
-                base_name='screenshots-project')
+                base_name='screenshots-projects')

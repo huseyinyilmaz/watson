@@ -130,3 +130,7 @@ class Project(TimeStampedModel):
         indexes = [
             models.Index(fields=['slug']),
         ]
+
+        unique_together = [
+            ('slug', 'organization')
+        ]
