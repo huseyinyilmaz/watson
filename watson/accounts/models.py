@@ -14,6 +14,7 @@ from core.utils import get_slug
 from accounts import managers
 import uuid
 
+
 class Organization(TimeStampedModel):
 
     """Organization Model."""

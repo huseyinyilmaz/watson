@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-
+from django.http import Http404
 from rest_framework import viewsets
 from rest_framework import mixins
 from rest_framework import permissions
@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from accounts import models
 from accounts import serializers
 from core.permissions import CustomPermission
+from rest_framework.serializers import ValidationError
 
 User = get_user_model()
 
@@ -69,8 +70,18 @@ class SessionViewSet(mixins.CreateModelMixin,
     def get_response(self, request):
         """Return response for given view."""
         user = request.user
-        organization = user.default_organization
-        project = organization.project_set.get(default=True)
+        project_id = request.GET.get('project')
+        if project_id:
+            project = (models.Project.objects
+                       .filter(id=project_id)
+                       .select_related('organization')
+                       .first())
+            if not project:
+                raise Http404()
+            organization = project.organization
+        else:
+            organization = user.default_organization
+            project = organization.project_set.get(default=True)
 
         logged_in = not user.is_anonymous
         response = {'logged_in': logged_in}
@@ -98,6 +109,7 @@ class SessionViewSet(mixins.CreateModelMixin,
         """List response."""
         return Response(self.get_response(request))
 
+
 class ProjectViewSet(mixins.ListModelMixin,
                      mixins.RetrieveModelMixin,
                      mixins.CreateModelMixin,
@@ -111,9 +123,19 @@ class ProjectViewSet(mixins.ListModelMixin,
     """
     serializer_class = serializers.ProjectSerializer
 
+    def perform_destroy(self, instance):
+        if instance.default:
+            raise ValidationError({
+                'detail': 'You cannot delete this project! '
+                'Because it is default project '
+                'for organization {}'.format(instance.organization.name)})
+        else:
+            super().perform_destroy(instance)
+
     def get_queryset(self):
         organization_id = self.request.query_params.get('organization')
         if organization_id:
+            # make user has right to access organization.
             if (self.request.user.organizations
                     .filter(id=organization_id).exists()):
                 projects = (models.Project.objects

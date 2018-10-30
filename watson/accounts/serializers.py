@@ -7,6 +7,7 @@ from rest_framework.compat import authenticate
 from accounts.models import Organization
 from accounts.models import Project
 # from accounts.utils import generate_registration_code
+from core.utils import get_slug
 
 User = get_user_model()
 
@@ -87,6 +88,19 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
 
+    def validate(self, attrs):
+        name = attrs.get('name')
+        organization = attrs.get('organization')
+        slug = get_slug(
+            Project.objects.filter(organization=organization),
+            name,
+            )
+        attrs['slug'] = slug
+        return attrs
+
     class Meta:
         model = Project
         fields = ['id', 'slug', 'name', 'organization', 'default']
+        extra_kwargs = {
+            'slug': {'required': False, 'read_only': True},
+        }
