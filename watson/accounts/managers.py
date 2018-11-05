@@ -3,7 +3,7 @@
 import logging
 from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager
-from django.utils.text import slugify
+# from django.utils.text import slugify
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,6 @@ class UserManager(BaseUserManager):
             raise ValueError('The given email must be set')
 
         user = self.model(email=email,
-                          full_name=email,
                           is_staff=is_staff,
                           is_active=True,
                           is_superuser=is_superuser,

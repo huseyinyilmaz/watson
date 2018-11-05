@@ -49,6 +49,10 @@ class OrganizationViewSet(mixins.ListModelMixin,
         queryset = self.request.user.organizations.all()
         return queryset
 
+class SignupViewSet(viewsets.GenericViewSet,
+                    mixins.CreateModelMixin):
+    serializer_class = serializers.SignupSerializer
+
 
 class SessionViewSet(mixins.CreateModelMixin,
                      mixins.RetrieveModelMixin,

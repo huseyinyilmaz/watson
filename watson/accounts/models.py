@@ -1,3 +1,4 @@
+import logging
 from django.db import models
 
 from django.utils.translation import ugettext_lazy as _
@@ -13,6 +14,8 @@ from django_extensions.db.models import TimeStampedModel
 from core.utils import get_slug
 from accounts import managers
 import uuid
+
+logger = logging.getLogger(__name__)
 
 
 class Organization(TimeStampedModel):
@@ -109,12 +112,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         is_created = not self.pk
         if is_created:
             full_name = kwargs.get('full_name', self.full_name)
-            # create default organization.
-            slug = get_slug(Organization.objects.all(), full_name)
-            organization = Organization.objects.create(email=self.email,
-                                                       name=self.full_name,
-                                                       slug=slug)
-            self.default_organization = organization
+            if not self.default_organization:
+                # create default organization.
+                slug = get_slug(Organization.objects.all(), full_name)
+                organization = Organization.objects.create(email=self.email,
+                                                           name=self.full_name,
+                                                           slug=slug)
+                logger.warning('No organization is provided. Default '
+                               f'organization is created with slug {slug}')
+                self.default_organization = organization
         result = super().save(*args, **kwargs)
         if is_created:
             self.organizations.add(self.default_organization)
@@ -125,7 +131,7 @@ class Project(TimeStampedModel):
     slug = models.SlugField()
     name = models.CharField(max_length=255, blank=True, null=False)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    default= models.BooleanField(default=False)
+    default = models.BooleanField(default=False)
 
     class Meta:
         indexes = [

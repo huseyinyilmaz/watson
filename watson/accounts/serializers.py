@@ -9,6 +9,7 @@ from accounts.models import Project
 # from accounts.utils import generate_registration_code
 from core.utils import get_slug
 
+
 User = get_user_model()
 
 
@@ -61,9 +62,7 @@ class SessionSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
-        obj = User.objects.create_user(**validated_data)
-        Organization.objects.create_for_user(obj)
-        return obj
+        return User.objects.create_user(**validated_data)
 
     class Meta:
         model = User
@@ -103,4 +102,64 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = ['id', 'slug', 'name', 'organization', 'default']
         extra_kwargs = {
             'slug': {'required': False, 'read_only': True},
+        }
+
+
+class SignupSerializer(serializers.Serializer):
+    name = serializers.CharField(label=_("Full Name"))
+    email = serializers.EmailField(label=_("Email"))
+    password = serializers.CharField(
+        label=_("Password"),
+        style={'input_type': 'password'},
+        trim_whitespace=False,
+        write_only=True,
+    )
+    organization_company = serializers.CharField(label=_("Company"),
+                                                 required=False)
+    organizatin_location = serializers.CharField(label=_("Location"),
+                                                 required=False)
+    organization_company_url = serializers.URLField(label=_("CompanyUrl"),
+                                                    required=False)
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        name = attrs.get('email').split('@')[0]
+        attrs['organization_name'] = name
+        attrs['organization_slug'] = get_slug(Organization.objects.all(), name)
+        return attrs
+
+    def create(self, validated_data):
+        organization_data = {
+            'name': validated_data['organization_name'],
+            'slug': validated_data['organization_slug'],
+            'company': validated_data.get('organization_company', ''),
+            'location': validated_data.get('organization_location', ''),
+            'company_url': validated_data.get('organization_company_url', ''),
+        }
+        organization_serializer = OrganizationSerializer(
+            data=organization_data)
+        organization_serializer.is_valid(raise_exception=True)
+        user_data = {
+            'full_name': validated_data['name'],
+            'email': validated_data['email'],
+            'password': validated_data['password'],
+            'organization': 1,
+        }
+        user_serializer = UserSerializer(data=user_data)
+        user_serializer.is_valid(raise_exception=True)
+        # ================ Data is valid save objects ================
+        organization = organization_serializer.save()
+        user_data['default_organization'] = organization.pk
+        user_serializer = UserSerializer(data=user_data)
+        user_serializer.is_valid(raise_exception=True)
+        user = user_serializer.save()
+        user.organizations.add(organization)
+        return {
+            'user': user_serializer,
+            'organization': organization_serializer,
+            'name': validated_data.get('name'),
+            'email': validated_data.get('email'),
+            'company': validated_data.get('company', ''),
+            'location': validated_data.get('location', ''),
+            'company_url': validated_data.get('company_url', ''),
         }
