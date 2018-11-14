@@ -51,6 +51,7 @@ class OrganizationViewSet(mixins.ListModelMixin,
 
 class SignupViewSet(viewsets.GenericViewSet,
                     mixins.CreateModelMixin):
+    permission_classes = ()
     serializer_class = serializers.SignupSerializer
 
 

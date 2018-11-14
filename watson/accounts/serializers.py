@@ -9,6 +9,9 @@ from accounts.models import Project
 # from accounts.utils import generate_registration_code
 from core.utils import get_slug
 
+import logging
+
+logger =logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -105,61 +108,63 @@ class ProjectSerializer(serializers.ModelSerializer):
         }
 
 
-class SignupSerializer(serializers.Serializer):
-    name = serializers.CharField(label=_("Full Name"))
-    email = serializers.EmailField(label=_("Email"))
+class SignupUserSerializer(serializers.ModelSerializer):
+
     password = serializers.CharField(
         label=_("Password"),
         style={'input_type': 'password'},
         trim_whitespace=False,
         write_only=True,
     )
-    organization_company = serializers.CharField(label=_("Company"),
-                                                 required=False)
-    organizatin_location = serializers.CharField(label=_("Location"),
-                                                 required=False)
-    organization_company_url = serializers.URLField(label=_("CompanyUrl"),
-                                                    required=False)
+
+    def create(self, validated_data):
+        instance =  User.objects.create_user(**validated_data)
+        return instance
+
+    class Meta:
+        model = User
+        #  fields = ['email', 'password']
+        fields = ['id', 'email', 'full_name',
+                  'date_joined', 'email_verified',
+                  'default_organization', 'password']
+        extra_kwargs = {
+            'default_organization': {'required': False},
+            'password': {'write_only': True},
+            'date_joined': {'read_only': True},
+            'email_verified': {'read_only': True},
+        }
+
+
+class SignupOrganizationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Organization
+        fields = ['id', 'slug', 'name', 'company', 'location', 'email', 'url']
+        extra_kwargs = {
+            'slug': {'required': False},
+            'name': {'required': False},
+        }
+
+class SignupSerializer(serializers.Serializer):
+    user = SignupUserSerializer()
+    organization = SignupOrganizationSerializer()
 
     def validate(self, attrs):
-        attrs = super().validate(attrs)
-        name = attrs.get('email').split('@')[0]
-        attrs['organization_name'] = name
-        attrs['organization_slug'] = get_slug(Organization.objects.all(), name)
+        email = attrs['user'].get('email', '')
+        attrs['organization']['name'] = email
+        attrs['organization']['slug'] = get_slug(Organization.objects.all(),
+                                                 email.split('@')[0])
+        attrs['organization']['email'] = email
         return attrs
 
     def create(self, validated_data):
-        organization_data = {
-            'name': validated_data['organization_name'],
-            'slug': validated_data['organization_slug'],
-            'company': validated_data.get('organization_company', ''),
-            'location': validated_data.get('organization_location', ''),
-            'company_url': validated_data.get('organization_company_url', ''),
-        }
-        organization_serializer = OrganizationSerializer(
-            data=organization_data)
+        logger.debug('SignupForm validated_data = %s', validated_data)
+        organization_serializer = SignupOrganizationSerializer(data=validated_data['organization'])
         organization_serializer.is_valid(raise_exception=True)
-        user_data = {
-            'full_name': validated_data['name'],
-            'email': validated_data['email'],
-            'password': validated_data['password'],
-            'organization': 1,
-        }
-        user_serializer = UserSerializer(data=user_data)
-        user_serializer.is_valid(raise_exception=True)
-        # ================ Data is valid save objects ================
         organization = organization_serializer.save()
-        user_data['default_organization'] = organization.pk
-        user_serializer = UserSerializer(data=user_data)
+        validated_data['user']['default_organization'] = organization.pk
+        user_serializer = SignupUserSerializer(data=validated_data['user'])
         user_serializer.is_valid(raise_exception=True)
         user = user_serializer.save()
         user.organizations.add(organization)
-        return {
-            'user': user_serializer,
-            'organization': organization_serializer,
-            'name': validated_data.get('name'),
-            'email': validated_data.get('email'),
-            'company': validated_data.get('company', ''),
-            'location': validated_data.get('location', ''),
-            'company_url': validated_data.get('company_url', ''),
-        }
+        return {'user': user, 'organization': organization}
