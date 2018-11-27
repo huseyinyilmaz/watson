@@ -49,16 +49,17 @@ class OrganizationViewSet(mixins.ListModelMixin,
         queryset = self.request.user.organizations.all()
         return queryset
 
+
 class SignupViewSet(viewsets.GenericViewSet,
                     mixins.CreateModelMixin):
     permission_classes = ()
     serializer_class = serializers.SignupSerializer
 
 
-class SessionViewSet(mixins.CreateModelMixin,
-                     mixins.RetrieveModelMixin,
-                     mixins.DestroyModelMixin,
-                     viewsets.GenericViewSet):
+class SessionViewSet2(mixins.CreateModelMixin,
+                      mixins.RetrieveModelMixin,
+                      mixins.DestroyModelMixin,
+                      viewsets.GenericViewSet):
 
     """
     Create and removes sessions.
@@ -113,6 +114,32 @@ class SessionViewSet(mixins.CreateModelMixin,
     def list(self, request):
         """List response."""
         return Response(self.get_response(request))
+
+
+class SessionViewSet(mixins.CreateModelMixin,
+                     mixins.RetrieveModelMixin,
+                     mixins.ListModelMixin,
+                     mixins.DestroyModelMixin,
+                     viewsets.GenericViewSet):
+
+    """
+    Create and removes sessions.
+
+    Based on this code
+    https://github.com/JamesRitchie/django-rest-framework-sav/blob/a968129be88a1981d9904c3679e5fdd9490e890d/rest_framework_sav/views.py # noqa
+    """
+
+    lookup_field = 'key'
+    permission_classes = ()
+    serializer_class = serializers.SessionSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        # import ipdb; ipdb.set_trace()
+        if user.is_anonymous:
+            return Token.objects.none()
+        else:
+            return Token.objects.filter(user=user)
 
 
 class ProjectViewSet(mixins.ListModelMixin,

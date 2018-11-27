@@ -11,55 +11,9 @@ from core.utils import get_slug
 
 import logging
 
-logger =logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
-
-
-class SessionSerializer(serializers.Serializer):
-
-    """Session serializer that logs in user.
-
-    based on rest_framework.authtoken.serializers.AuthTokenSerializer
-
-    """
-
-    # write_only_fields = ['email', 'password']
-    email = serializers.EmailField(label=_("Email"), write_only=True)
-    password = serializers.CharField(
-        label=_("Password"),
-        style={'input_type': 'password'},
-        trim_whitespace=False,
-        write_only=True,
-    )
-    token = serializers.CharField(label=_("token"), read_only=True)
-
-    def validate(self, attrs):
-        email = attrs.get('email')
-        password = attrs.get('password')
-        if email and password:
-            user = authenticate(request=self.context.get('request'),
-                                email=email, password=password)
-
-            # The authenticate call simply returns None for is_active=False
-            # users. (Assuming the default ModelBackend authentication
-            # backend.)
-            if not user:
-                msg = _('Unable to log in with provided credentials.')
-                raise serializers.ValidationError(msg, code='authorization')
-        else:
-            msg = _('Must include "email" and "password".')
-            raise serializers.ValidationError(msg, code='authorization')
-
-        attrs['user'] = user
-        return attrs
-
-    def create(self, validated_data):
-        """Create a token for user."""
-        user = validated_data['user']
-        Token.objects.filter(user=user).delete()
-        token = Token.objects.create(user=user)
-        return {'token': token.key}
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -145,6 +99,7 @@ class SignupOrganizationSerializer(serializers.ModelSerializer):
             'name': {'required': False},
         }
 
+
 class SignupSerializer(serializers.Serializer):
     user = SignupUserSerializer()
     organization = SignupOrganizationSerializer()
@@ -168,3 +123,68 @@ class SignupSerializer(serializers.Serializer):
         user = user_serializer.save()
         user.organizations.add(organization)
         return {'user': user, 'organization': organization}
+
+
+class SessionSerializer(serializers.Serializer):
+
+    """Session serializer that logs in user.
+
+    based on rest_framework.authtoken.serializers.AuthTokenSerializer
+
+    """
+
+    # write_only_fields = ['email', 'password']
+    email = serializers.EmailField(label=_("Email"), write_only=True)
+    password = serializers.CharField(
+        label=_("Password"),
+        style={'input_type': 'password'},
+        trim_whitespace=False,
+        write_only=True,
+    )
+
+    key = serializers.CharField(label=_("token"), read_only=True)
+
+    user = UserSerializer(read_only=True)
+    organization = serializers.SerializerMethodField(read_only=True)
+    project = serializers.SerializerMethodField(read_only=True)
+
+    def get_organization(self, token):
+        user = token.user
+        organization = user.default_organization
+        # project = organization.project_set.get(default=True)
+        # user = token.user
+        return OrganizationSerializer(instance=organization).data
+
+    def get_project(self, token):
+        user = token.user
+        organization = user.default_organization
+        project = organization.project_set.get(default=True)
+        # user = token.user
+        return ProjectSerializer(instance=project).data
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        if email and password:
+            user = authenticate(request=self.context.get('request'),
+                                email=email, password=password)
+
+            # The authenticate call simply returns None for is_active=False
+            # users. (Assuming the default ModelBackend authentication
+            # backend.)
+            if not user:
+                msg = _('Unable to log in with provided credentials.')
+                raise serializers.ValidationError(msg, code='authorization')
+        else:
+            msg = _('Must include "email" and "password".')
+            raise serializers.ValidationError(msg, code='authorization')
+
+        attrs['user'] = user
+        return attrs
+
+    def create(self, validated_data):
+        """Create a token for user."""
+        user = validated_data['user']
+        Token.objects.filter(user=user).delete()
+        token = Token.objects.create(user=user)
+        return token
