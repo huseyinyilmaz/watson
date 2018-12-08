@@ -39,7 +39,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ['id', 'slug', 'name', 'company', 'location', 'email', 'url']
+        fields = ['id', 'slug', 'name', 'company',
+                  'location', 'email', 'url']
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -50,7 +51,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         slug = get_slug(
             Project.objects.filter(organization=organization),
             name,
-            )
+        )
         attrs['slug'] = slug
         return attrs
 
@@ -72,7 +73,7 @@ class SignupUserSerializer(serializers.ModelSerializer):
     )
 
     def create(self, validated_data):
-        instance =  User.objects.create_user(**validated_data)
+        instance = User.objects.create_user(**validated_data)
         return instance
 
     class Meta:
@@ -114,7 +115,8 @@ class SignupSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         logger.debug('SignupForm validated_data = %s', validated_data)
-        organization_serializer = SignupOrganizationSerializer(data=validated_data['organization'])
+        organization_serializer = SignupOrganizationSerializer(
+            data=validated_data['organization'])
         organization_serializer.is_valid(raise_exception=True)
         organization = organization_serializer.save()
         validated_data['user']['default_organization'] = organization.pk
@@ -148,17 +150,46 @@ class SessionSerializer(serializers.Serializer):
     organization = serializers.SerializerMethodField(read_only=True)
     project = serializers.SerializerMethodField(read_only=True)
 
-    def get_organization(self, token):
+    def get_organization_query(self, token):
         user = token.user
-        organization = user.default_organization
-        # project = organization.project_set.get(default=True)
-        # user = token.user
+        organization_id = self.context['request'].GET.get('organization')
+        if organization_id:
+            query = user.organizations.filter(id=organization_id)
+            if not query:
+                msg = _('You do not have permission to get '
+                        'data about this organization.')
+                raise serializers.ValidationError(msg, code='invalid_data')
+
+        else:
+            query = user.organizations.filter(id=user.default_organization_id)
+        return query
+
+    def get_organization(self, token):
+        query = self.get_organization_query(token)
+        organization = query.first()
+        if not organization:
+            msg = _('You do not have permission to get '
+                    'data about this organization.')
+            raise serializers.ValidationError(msg, code='invalid_data')
         return OrganizationSerializer(instance=organization).data
 
     def get_project(self, token):
-        user = token.user
-        organization = user.default_organization
-        project = organization.project_set.get(default=True)
+        organization_query = self.get_organization_query(token)
+        project_id = self.context['request'].GET.get('project')
+        if project_id:
+            project = (Project.objects
+                       .filter(id=project_id,
+                               organization__in=organization_query)
+                       .first())
+            if not project:
+                msg = _('You do not have permission to get '
+                        'data about this project.')
+                raise serializers.ValidationError(msg, code='invalid_data')
+        else:
+            project = Project.objects.filter(
+                organization__in=organization_query,
+                default=True).first()
+            # organization_query.project.get(default=True)
         # user = token.user
         return ProjectSerializer(instance=project).data
 
