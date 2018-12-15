@@ -37,10 +37,30 @@ class UserSerializer(serializers.ModelSerializer):
 
 class OrganizationSerializer(serializers.ModelSerializer):
 
+    def validate(self, attrs):
+        user = self.context['request'].user
+        name = attrs.get('name')
+        slug = get_slug(
+            user.organizations.all(),
+            name,
+        )
+        attrs['slug'] = slug
+        return attrs
+
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+        user = self.context['request'].user
+        user.organizations.add(instance)
+        # User.objects.create_user(**validated_data)
+        return instance
+
     class Meta:
         model = Organization
         fields = ['id', 'slug', 'name', 'company',
                   'location', 'email', 'url']
+        extra_kwargs = {
+            'slug': {'read_only': True},
+            }
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -153,19 +173,21 @@ class SessionSerializer(serializers.Serializer):
     def get_organization_query(self, token):
         user = token.user
         organization_id = self.context['request'].GET.get('organization')
+        query = user.organizations.all()
         if organization_id:
-            query = user.organizations.filter(id=organization_id)
+            query = query.filter(id=organization_id)
             if not query:
                 msg = _('You do not have permission to get '
                         'data about this organization.')
                 raise serializers.ValidationError(msg, code='invalid_data')
-
-        else:
-            query = user.organizations.filter(id=user.default_organization_id)
         return query
 
     def get_organization(self, token):
+        user = token.user
+        organization_id = self.context['request'].GET.get('organization')
         query = self.get_organization_query(token)
+        if not organization_id:
+            query = query.filter(id=user.default_organization.id)
         organization = query.first()
         if not organization:
             msg = _('You do not have permission to get '

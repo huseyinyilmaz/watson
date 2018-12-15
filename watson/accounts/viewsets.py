@@ -8,7 +8,6 @@ from rest_framework.response import Response
 
 from accounts import models
 from accounts import serializers
-from core.permissions import CustomPermission
 from rest_framework.serializers import ValidationError
 
 User = get_user_model()
@@ -36,14 +35,15 @@ class UserViewSet(mixins.ListModelMixin,
 
 class OrganizationViewSet(mixins.ListModelMixin,
                           mixins.RetrieveModelMixin,
+                          mixins.DestroyModelMixin,
+                          mixins.CreateModelMixin,
                           viewsets.GenericViewSet):
 
-    permission_classes = (permissions.IsAuthenticated,
-                          CustomPermission)
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = serializers.OrganizationSerializer
 
-    def has_object_permission(self, obj):
-        return self.request.user.organizations.filter(id=obj.id).exists()
+    # def has_object_permission(self, obj):
+    #     return self.request.user.organizations.filter(id=obj.id).exists()
 
     def get_queryset(self):
         queryset = self.request.user.organizations.all()

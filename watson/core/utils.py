@@ -9,7 +9,6 @@ def get_slug(queryset, slug, slug_attr='slug', postfix=None):
     else:
         postfix_str = str(postfix)
     slug_str = f'{slug_base}{postfix_str}'
-
     if queryset.filter(**{slug_attr: slug_str}).exists():
         if postfix is None:
             postfix = 1
