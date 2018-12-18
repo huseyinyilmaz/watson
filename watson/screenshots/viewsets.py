@@ -19,20 +19,20 @@ class ScreenshotSnapshotViewSet(mixins.ListModelMixin,
     serializer_class = serializers.ScreenshotSnapshotSerializer
 
     def get_queryset(self):
-        organization_id = self.request.query_params.get('organization')
-        if organization_id:
+        project_id = self.request.query_params.get('project')
+        if project_id:
             if (self.request.user.organizations
-                    .filter(id=organization_id).exists()):
+                    .filter(projects__id=project_id).exists()):
                 screenshots = (models.ScreenshotSnapshot.objects
-                               .filter(organization=organization_id))
+                               .filter(project=project_id))
             else:
                 # user does not belong to organization
                 screenshots = models.ScreenshotSnapshot.objects.none()
         else:
-            organization_ids = self.request.user.organizations.values_list(
-                'id', flat=True)
+            project_ids = self.request.user.organizations.values_list(
+                'project__id', flat=True)
             # return screenshots that user can see.
             screenshots = (models.ScreenshotSnapshot.objects
-                           .filter(organization__in=organization_ids))
+                           .filter(project__in=project_ids))
 
         return screenshots

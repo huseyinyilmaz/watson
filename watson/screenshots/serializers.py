@@ -12,19 +12,19 @@ class ScreenshotSnapshotSerializer(serializers.ModelSerializer):
     """
     ScreenshotSerializer
     """
-    organization = serializers.CharField(max_length=255, write_only=True)
+    # project = serializers.CharField(max_length=255, write_only=True)
 
     def create(self, validated_data):
         """Create a token for user."""
         request = self.context['request']
-        organization_id = request.data['organization']
-        organization = (request.user.organizations
-                        .filter(id=organization_id).first())
-        if not organization:
+        project_id = request.data['project']
+        project_exists = (request.user.organizations
+                          .filter(project__id=project_id).exists())
+        if not project_exists:
             raise serializers.ValidationError(
                 {'non_field_errors':
                  ['User is not belong to '
-                  f'organization with id { organization_id }']})
+                  f'project with id { project_id }']})
         object = super().create(validated_data)
         # organization.screenshots.add(object)
         # tasks.process_screenshot.delay(object.pk)
@@ -41,9 +41,9 @@ class ScreenshotSnapshotSerializer(serializers.ModelSerializer):
         }
 
         fields = ['id', 'code', 'url', 'delay', 'device',
-                  'status', 'result', 'image', 'organization', 'created',
+                  'status', 'result', 'image', 'project', 'created',
                   'modified', 'screenshot', 'pagesnapshot']
 
-        write_only_fields = ['organization']
+        write_only_fields = ['project']
         read_only_fields = ['id', 'code', 'image', 'code', 'result', 'status',
                             'result', 'created', 'modified']
