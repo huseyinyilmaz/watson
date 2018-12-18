@@ -22,7 +22,7 @@ class ScreenshotSnapshotViewSet(mixins.ListModelMixin,
         project_id = self.request.query_params.get('project')
         if project_id:
             if (self.request.user.organizations
-                    .filter(projects__id=project_id).exists()):
+                    .filter(project__id=project_id).exists()):
                 screenshots = (models.ScreenshotSnapshot.objects
                                .filter(project=project_id))
             else:
