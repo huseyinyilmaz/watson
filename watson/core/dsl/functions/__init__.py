@@ -5,17 +5,17 @@ from typing import Tuple
 from core.dsl import types
 
 from core.dsl.functions.click import click
-from core.dsl.functions.click import wait
+from core.dsl.functions.wait import wait
 
 clickSpec = types.FunctionSpec(
     name='click',
-    args=(types.String, ),
+    argTypes=(types.String, ),
     fn=click
 )
 
 waitSpec = types.FunctionSpec(
     name='wait',
-    args=(types.Number, ),
+    argTypes=(types.Number, ),
     fn=wait
 )
 

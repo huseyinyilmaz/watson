@@ -1,6 +1,6 @@
 from typing import Any
 
-from itertoolsion import zip_longest
+from itertools import zip_longest
 from core.dsl import types
 
 from core.dsl.functions import get_function_spec
@@ -10,11 +10,11 @@ from core.dsl.exceptions import SemanticException
 def parse_block(block: types.Block):
     expressions = map(parse, block.values)
 
-    def _runner(**args):
+    def _runner(**kwargs):
         result = None
-        for e in expressions:
-            if isinstance(e, types.Function):
-                result = e(**args)
+        for e, t in zip(expressions, block.values):
+            if isinstance(t, types.Function):
+                result = e(**kwargs)
             else:
                 # if expression is not a function
                 # whole thing evaluates to its value.
@@ -25,12 +25,13 @@ def parse_block(block: types.Block):
 
 
 def parse_function(f: types.Function):
-    spec = get_function_spec(f.value)
+    spec = get_function_spec(f.name)
     args = []
-    for a, t in zip_longest(f.args, spec.args):
-        if len(f.args) == len(spec.args):
+    for a, t in zip_longest(f.args, spec.argTypes):
+        if len(f.args) != len(spec.argTypes):
             raise SemanticException(
-                'Function {} takes {} arguments'.format(f.name, len(f.args)))
+                'Function {} takes {} arguments but {} arguments are given'
+                .format(f.name, len(spec.argTypes), len(f.args)))
         if not isinstance(a, t):
             raise SemanticException(
                 'Value {} is must be type of {}'.format(a, t))
@@ -44,6 +45,6 @@ def parse(expr: types.Expression) -> Any:
     if isinstance(expr, types.String):
         return expr.value
     if isinstance(expr, types.Block):
-        return parse_block
+        return parse_block(expr)
     if isinstance(expr, types.Function):
         return parse_function(expr)
