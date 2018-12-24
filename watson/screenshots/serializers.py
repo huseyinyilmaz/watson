@@ -42,7 +42,7 @@ class ScreenshotSnapshotSerializer(serializers.ModelSerializer):
 
         fields = ['id', 'code', 'url', 'delay', 'device',
                   'status', 'result', 'image', 'project', 'created',
-                  'modified', 'screenshot', 'pagesnapshot']
+                  'modified', 'screenshot', 'pagesnapshot', 'script']
 
         write_only_fields = ['project']
         read_only_fields = ['id', 'code', 'image', 'code', 'result', 'status',

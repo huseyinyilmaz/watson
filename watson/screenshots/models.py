@@ -32,6 +32,8 @@ class ScreenshotBase(PageBase):
         max_length=255,
         choices=constants.DEVICE_CHOICES)
 
+    script = models.TextField(blank=True)
+
     class Meta:
         abstract = True
 

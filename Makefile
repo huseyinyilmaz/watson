@@ -35,6 +35,11 @@ graph_models:
 		cd /watson/watson; \
 		python manage.py graph_models -o models.png --all --group-models;"
 
+shell:
+	$(DOCKER_COMPOSE) exec web	sh -c " \
+		cd /watson/watson; \
+		python manage.py shell_plus; "
+
 reset_db:
 	$(DOCKER_COMPOSE) exec web	sh -c " \
 		cd /watson/watson; \

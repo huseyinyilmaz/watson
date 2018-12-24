@@ -35,3 +35,11 @@ Sources
 - https://gist.github.com/rverton/d07a2232f4c0e1c2b9894e9bdb4fa6cf
 - https://www.npmjs.com/package/capture-chrome
 - https://www.npmjs.com/package/capture-phantomjs
+
+
+Scripting language for api
+--------------------------
+
+
+Page logic checker
+------------------

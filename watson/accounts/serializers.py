@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
-from rest_framework.compat import authenticate
+from django.contrib.auth import authenticate
 from accounts.models import Organization
 from accounts.models import Project
 # from accounts.utils import generate_registration_code

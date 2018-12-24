@@ -16,8 +16,11 @@ Pillow
 
 selenium
 
+pyparsing
+
 # development
 flake8
+flake8-mypy
 ipdb
 ipython
 pydotplus

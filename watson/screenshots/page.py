@@ -60,7 +60,7 @@ class Page:
         try:
             self.driver = get_driver(self.device)
             logger.debug('Driver instance created.')
-        except WebDriverException as e:
+        except WebDriverException:
             logger.exception('There were an error  getting the driver.')
             raise
 
@@ -104,6 +104,12 @@ class Page:
         return info['window']['scrollY'] > 0
 
     def adjust_width(self, result=False):
+            new_device = dataclasses.replace(
+                self.device,
+                width=self.device.selenium_width)
+            self.set_window_size(new_device)
+
+    def _adjust_width(self, result=False):
         """If no change is done on page return False else return True """
         logger.debug('Adjusting page width')
         # logger.debug('info = %s', info)
@@ -129,7 +135,7 @@ class Page:
     def adjust_height(self, result=False):
         logger.debug('Adjusting page width')
         if self.has_scroll():
-            if self._current_device.height == constants.MAXIMUM_SCREENSHOT_HEIGHT:
+            if self._current_device.height == constants.MAXIMUM_SCREENSHOT_HEIGHT: # noqa
                 return result
             self.scroll_down()
             info = self.get_info()
@@ -150,6 +156,10 @@ class Page:
             return False
 
     def adjust_dimension(self):
+        self.set_window_size(self.device)
+        # self.adjust_width()
+
+    def _adjust_dimension(self):
         self.adjust_width()
         self.adjust_height()
         self.adjust_width()
