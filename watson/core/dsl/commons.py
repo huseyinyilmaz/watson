@@ -37,7 +37,7 @@ expr = Forward()
 
 def number_parse_action(instring, tokensStart, retTokens):
     parsed_values = retTokens[0]
-    return types.Number(parsed_values[0])
+    return types.Number(float(parsed_values))
 
 
 number = Combine(Word(nums) + Optional(Literal('.') + Word(nums)))
@@ -54,7 +54,7 @@ double_quote_string = QuotedString('"', escChar='\\')
 
 def string_parse_action(instring, tokensStart, retTokens):
     parsed_values = retTokens[0]
-    return types.String(parsed_values[0])
+    return types.String(parsed_values)
 
 
 string = single_quote_string | double_quote_string

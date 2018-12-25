@@ -1,5 +1,6 @@
 def wait(duration: int):
-    def f(client):
-        print('Wait function is running duration:', duration)
+    def f(**kwargs):
+        log = kwargs['log']
+        log(f'log({duration}): success')
         return True
     return f

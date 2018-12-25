@@ -2,7 +2,7 @@ from rest_framework import serializers
 from screenshots import models
 from screenshots import tasks
 from core import constants
-
+from core import dsl
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -13,6 +13,13 @@ class ScreenshotSnapshotSerializer(serializers.ModelSerializer):
     ScreenshotSerializer
     """
     # project = serializers.CharField(max_length=255, write_only=True)
+
+    def validate_script(self, data):
+        try:
+            dsl.get_script(data)
+        except dsl.DSLException as e:
+            raise serializers.ValidationError(*e.args)
+        return data
 
     def create(self, validated_data):
         """Create a token for user."""
@@ -25,6 +32,7 @@ class ScreenshotSnapshotSerializer(serializers.ModelSerializer):
                 {'non_field_errors':
                  ['User is not belong to '
                   f'project with id { project_id }']})
+
         object = super().create(validated_data)
         # organization.screenshots.add(object)
         # tasks.process_screenshot.delay(object.pk)

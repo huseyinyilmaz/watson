@@ -1,6 +1,10 @@
-class SyntaxException(Exception):
+class DSLException(Exception):
     pass
 
 
-class SemanticException(Exception):
+class SyntaxException(DSLException):
+    pass
+
+
+class SemanticException(DSLException):
     pass

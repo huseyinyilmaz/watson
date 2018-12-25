@@ -1,5 +1,6 @@
 def click(query: str):
-    def f(client):
-        print('Click function is running', query)
+    def f(**kwargs):
+        log = kwargs['log']
+        log(f'click(\'query\'): success')
         return True
     return f

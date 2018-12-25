@@ -8,7 +8,9 @@ from core.dsl.exceptions import SemanticException
 
 
 def parse_block(block: types.Block):
-    expressions = map(parse, block.values)
+    # Evaluate map result to list so we can do
+    # type validation at script creation and not on run time.
+    expressions = list(map(parse, block.values))
 
     def _runner(**kwargs):
         result = None
@@ -28,13 +30,14 @@ def parse_function(f: types.Function):
     spec = get_function_spec(f.name)
     args = []
     for a, t in zip_longest(f.args, spec.argTypes):
+        print(f, spec)
         if len(f.args) != len(spec.argTypes):
             raise SemanticException(
                 'Function {} takes {} arguments but {} arguments are given'
                 .format(f.name, len(spec.argTypes), len(f.args)))
         if not isinstance(a, t):
             raise SemanticException(
-                'Value {} is must be type of {}'.format(a, t))
+                'Value {} is must be type of {}'.format(a, t.__name__))
         args.append(parse(a))
     return spec.fn(*args)
 

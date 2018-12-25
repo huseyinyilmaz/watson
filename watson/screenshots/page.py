@@ -3,6 +3,7 @@ from logging import getLogger
 from screenshots.models import ScreenshotSnapshot
 from screenshots.utils import get_driver
 from core import constants
+from core import dsl
 from time import sleep
 from selenium.common.exceptions import WebDriverException
 
@@ -75,8 +76,13 @@ class Page:
     def load(self):
         """Load the page and wait for screenshot delay."""
         self.driver.get(self.screenshot.url)
-        self.set_window_size(self.device)
-        sleep(self.screenshot.delay)
+
+    def run_script(self, log_list):
+        script = dsl.get_script(self.screenshot.script)
+        script(
+            driver=self.driver,
+            log=log_list.append)
+        return logger
 
     def get_info(self):
         """load page information"""
@@ -166,6 +172,11 @@ class Page:
         self.adjust_height()
 
     def save_screenshot(self):
+        self.set_window_size(self.device)
+        # TODO remove sleep
+        sleep(self.screenshot.delay)
+        log_list = []
+        self.run_script(log_list)
         # get base64 image
         data = self.driver.get_screenshot_as_base64()
         # import ipdb; ipdb.set_trace()
@@ -197,6 +208,7 @@ class Page:
             'success': True,
             'width': image.width,
             'height': image.height,
+            'logs': log_list,
         }
         self.screenshot.image.save(f.name, f)
         self.screenshot.code = code

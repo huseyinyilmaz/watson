@@ -4,8 +4,6 @@ from rest_framework import mixins
 from screenshots import models
 from screenshots import serializers
 
-from core import dsl
-
 
 class ScreenshotSnapshotViewSet(mixins.ListModelMixin,
                                 mixins.RetrieveModelMixin,
@@ -36,7 +34,4 @@ class ScreenshotSnapshotViewSet(mixins.ListModelMixin,
             # return screenshots that user can see.
             screenshots = (models.ScreenshotSnapshot.objects
                            .filter(project__in=project_ids))
-        script = "'st\\'ring'"
-        val = dsl.getScript(script)
-        print(val)
         return screenshots

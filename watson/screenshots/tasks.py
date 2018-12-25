@@ -15,7 +15,6 @@ def process_screenshot(screenshot_id):
     page = get_page(screenshot_id)
     try:
         page.load()
-        page.adjust_dimension()
         page.save_screenshot()
         logger.debug('Screenshot dimensions after save: %s',
                      page._current_device)
