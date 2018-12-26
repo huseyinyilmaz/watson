@@ -16,6 +16,7 @@
 
 ** Alternatives
 *** Screenshot alternatives
+   - https://www.stillio.com/
    - https://web-capture.net/
    - https://snapito.com/
    - https://www.screenshotmachine.com/

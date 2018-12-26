@@ -13,6 +13,8 @@ from pyparsing import Combine
 from pyparsing import StringStart
 from pyparsing import StringEnd
 from pyparsing import ParseException as PyParsingParseException
+from pyparsing import cppStyleComment
+from pyparsing import pythonStyleComment
 # from pyparsing import ZeroOrMore
 # from pyparsing import White
 # from pyparsing import printables
@@ -91,7 +93,13 @@ block = OneOrMore(expr + (LineEnd() | Literal(';')).suppress())
 
 block.addParseAction(block_parse_action)
 
-expr << (string | number | function)
+
+###########
+# Comment #
+###########
+comment = (cppStyleComment | pythonStyleComment).suppress()
+
+expr << (string | number | function | comment)
 
 script = StringStart() + block + StringEnd()
 

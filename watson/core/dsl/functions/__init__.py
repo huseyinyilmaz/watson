@@ -1,6 +1,4 @@
-from typing import Any
-from typing import List
-from typing import Tuple
+from typing import Optional
 
 from core.dsl import types
 
@@ -20,8 +18,10 @@ waitSpec = types.FunctionSpec(
 )
 
 
-def get_function_spec(name: str) -> types.FunctionSpec:
+def get_function_spec(name: str) -> Optional[types.FunctionSpec]:
     if name == 'click':
         return clickSpec
     elif name == 'wait':
         return waitSpec
+    else:
+        return None

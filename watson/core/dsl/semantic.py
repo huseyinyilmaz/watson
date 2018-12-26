@@ -28,6 +28,9 @@ def parse_block(block: types.Block):
 
 def parse_function(f: types.Function):
     spec = get_function_spec(f.name)
+    if not spec:
+        raise SemanticException(
+            'Function with name "{}" does not exist.'.format(f.name))
     args = []
     for a, t in zip_longest(f.args, spec.argTypes):
         print(f, spec)
@@ -37,7 +40,7 @@ def parse_function(f: types.Function):
                 .format(f.name, len(spec.argTypes), len(f.args)))
         if not isinstance(a, t):
             raise SemanticException(
-                'Value {} is must be type of {}'.format(a, t.__name__))
+                'Value {} must be type of {}'.format(a.value, t.__name__))
         args.append(parse(a))
     return spec.fn(*args)
 
