@@ -43,3 +43,18 @@ Scripting language for api
 
 Page logic checker
 ------------------
+
+
+Sample scripts
+--------------
+
+::
+
+   setDevice('chrome_1440')
+   getUrl(url)
+   delay(3000)
+   click('button')
+   waitForQuery('.value')
+   takeScreenshot()
+   delay(1000)
+   takeScreenshot()
