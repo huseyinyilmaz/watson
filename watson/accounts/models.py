@@ -108,6 +108,16 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Send an email to this User."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
+    def create_default_organization(self):
+        organization_name = self.email
+        organization_slug = get_slug(Organization.objects.all(),
+                                     self.email.split('@')[0])
+        organization = Organization.objects.create(
+            name=organization_name,
+            slug=organization_slug,
+        )
+        return organization
+
     def save(self, *args, **kwargs):
         is_created = not self.pk
         if is_created:

@@ -19,7 +19,12 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        data = {
+            **validated_data,
+            'is_staff': False,
+            'is_superuser': False,
+        }
+        return User.objects._create_user(**data)
 
     class Meta:
         model = User
@@ -38,12 +43,8 @@ class UserSerializer(serializers.ModelSerializer):
 class OrganizationSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
-        user = self.context['request'].user
         name = attrs.get('name')
-        slug = get_slug(
-            user.organizations.all(),
-            name,
-        )
+        slug = get_slug(Organization.objects.all(), name)
         attrs['slug'] = slug
         return attrs
 
@@ -93,7 +94,9 @@ class SignupUserSerializer(serializers.ModelSerializer):
     )
 
     def create(self, validated_data):
-        instance = User.objects.create_user(**validated_data)
+        instance = User.objects._create_user_without_organization(
+            is_staff=False, is_superuser=False,
+            **validated_data)
         return instance
 
     class Meta:
